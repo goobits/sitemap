@@ -12,6 +12,7 @@ export type {
 	RouteInventory,
 	RouteInventoryStats,
 	SitemapAudience,
+	SitemapChangeFreq,
 	SitemapEntry,
 	SitemapRoute,
 	SitemapSort

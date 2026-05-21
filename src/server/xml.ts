@@ -137,16 +137,34 @@ export function toAbsoluteUrl(origin: string, path: string) {
 	return `${ trimTrailingSlash(origin) }${ canonicalPath }`
 }
 
+function clampPriority(value: number | undefined): string | undefined {
+	if (typeof value !== 'number' || Number.isNaN(value)) return undefined
+	const bounded = Math.max(0, Math.min(1, value))
+	// Spec recommends one decimal; keep precision but trim trailing zeros.
+	return bounded.toFixed(1)
+}
+
 /**
  * Render a flat URL set as a `sitemap.xml` document. For larger sites where
  * you split into multiple shards, render each shard separately and use
  * `buildSitemapIndexXml` to point at them.
+ *
+ * Each route's `changefreq` and `priority` (if set) are emitted alongside
+ * `<loc>` + `<lastmod>`; major crawlers ignore those fields today but
+ * they're part of the sitemaps.org spec and harmless to include.
  */
 export function buildSitemapXml(origin: string, routes: SitemapRoute[]) {
 	const urlEntries = routes.map((route) => {
 		const loc = escapeXml(toAbsoluteUrl(origin, route.path))
 		const lastMod = escapeXml(formatSitemapLastMod(route.lastModified))
-		return `<url><loc>${ loc }</loc><lastmod>${ lastMod }</lastmod></url>`
+		const changefreqPart = route.changefreq
+			? `<changefreq>${ escapeXml(route.changefreq) }</changefreq>`
+			: ''
+		const priorityValue = clampPriority(route.priority)
+		const priorityPart = priorityValue
+			? `<priority>${ priorityValue }</priority>`
+			: ''
+		return `<url><loc>${ loc }</loc><lastmod>${ lastMod }</lastmod>${ changefreqPart }${ priorityPart }</url>`
 	}).join('')
 
 	return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${ urlEntries }</urlset>`

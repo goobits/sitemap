@@ -318,17 +318,17 @@ preprocessor, no `@goobits/ui` dependency.
 										<span class="gb-sitemap__row-name">{entry.name}</span>
 										<span class="gb-sitemap__row-path">{entry.path}</span>
 									</a>
-									{#if tags.length > 0}
-										<span class="gb-sitemap__tags">
-											{#each tags as tag (tag)}
-												<span class="gb-sitemap__tag" data-tag={tag}>{tag}</span>
-											{/each}
-										</span>
-									{/if}
+									<span class="gb-sitemap__tags" aria-hidden={tags.length === 0}>
+										{#each tags as tag (tag)}
+											<span class="gb-sitemap__tag" data-tag={tag}>{tag}</span>
+										{/each}
+									</span>
 									{#if entry.lastModified}
 										<time class="gb-sitemap__row-date" datetime={entry.lastModified}>
 											{formatDate(entry.lastModified)}
 										</time>
+									{:else}
+										<span class="gb-sitemap__row-date" aria-hidden="true"></span>
 									{/if}
 								</li>
 							{/each}
@@ -571,13 +571,15 @@ preprocessor, no `@goobits/ui` dependency.
 	.gb-sitemap__group {
 		background: var(--gb-sitemap-card-bg, rgba(0, 0, 0, 0.025));
 		border: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
+		border-left: 3px solid var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor));
 		border-radius: var(--gb-sitemap-radius, 0.625rem);
 		overflow: hidden;
-		transition: border-color 0.15s;
+		transition: border-color 0.25s ease;
 	}
 
 	.gb-sitemap__group:hover {
-		border-color: color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 35%, var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent)));
+		border-color: color-mix(in srgb, var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 60%, var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent)));
+		border-left-color: var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor));
 	}
 
 	.gb-sitemap__group[data-tone='secondary'] {
@@ -615,11 +617,13 @@ preprocessor, no `@goobits/ui` dependency.
 	}
 
 	.gb-sitemap__group-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 1.5rem;
-		height: 1.5rem;
+		display: inline-grid;
+		place-items: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		flex-shrink: 0;
+		border-radius: calc(var(--gb-sitemap-radius, 0.625rem) * 0.6);
+		background: color-mix(in srgb, var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 18%, transparent);
 		color: var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor));
 	}
 
@@ -696,31 +700,45 @@ preprocessor, no `@goobits/ui` dependency.
 		display: inline-flex;
 		gap: 0.25rem;
 		flex-wrap: wrap;
+		justify-self: end;
 	}
 
+	/*
+	 * Unified pastel pill — same shape/size/font for every tag, only hue varies.
+	 * Formula: bg = pill-hue at 12%, border = pill-hue at 32%, text = pill-hue
+	 * at 72% mixed toward foreground text. Each hue is overridable via a
+	 * matching `--gb-sitemap-tag-<lower>-hue` custom property.
+	 */
 	.gb-sitemap__tag {
-		padding: 0.08rem 0.4rem;
-		font-size: 0.65rem;
+		--pill-hue: var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent));
+		display: inline-flex;
+		align-items: center;
+		height: 1.25rem;
+		padding: 0 0.55rem;
+		font-size: 0.6875rem;
 		font-weight: 600;
-		letter-spacing: 0.04em;
-		color: var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent));
-		background: var(--gb-sitemap-bg, transparent);
-		border: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
-		border-radius: 4px;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		line-height: 1;
+		white-space: nowrap;
+		color: color-mix(in srgb, var(--pill-hue) 72%, var(--gb-sitemap-text, currentColor));
+		background: color-mix(in srgb, var(--pill-hue) 12%, transparent);
+		border: 1px solid color-mix(in srgb, var(--pill-hue) 32%, transparent);
+		border-radius: 999px;
 		font-variant-numeric: tabular-nums;
 	}
 
-	.gb-sitemap__tag[data-tag='SSR'],
-	.gb-sitemap__tag[data-tag='API'] {
-		color: var(--gb-sitemap-accent, currentColor);
-		border-color: color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 30%, var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent)));
-	}
-
-	.gb-sitemap__tag[data-tag='Auth'],
-	.gb-sitemap__tag[data-tag='Internal'] {
-		color: var(--gb-sitemap-secondary, color-mix(in srgb, currentColor 70%, transparent));
-		border-color: color-mix(in srgb, var(--gb-sitemap-secondary, color-mix(in srgb, currentColor 70%, transparent)) 30%, var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent)));
-	}
+	/* Per-tag default hues. Each can be overridden by a corresponding
+	   `--gb-sitemap-tag-*-hue` custom property on a parent element. */
+	.gb-sitemap__tag[data-tag='SSR']      { --pill-hue: var(--gb-sitemap-tag-ssr-hue, #3b82f6); }      /* blue */
+	.gb-sitemap__tag[data-tag='CSR']      { --pill-hue: var(--gb-sitemap-tag-csr-hue, #8b5cf6); }      /* violet */
+	.gb-sitemap__tag[data-tag='Dynamic']  { --pill-hue: var(--gb-sitemap-tag-dynamic-hue, #f59e0b); }  /* amber */
+	.gb-sitemap__tag[data-tag='Layout']   { --pill-hue: var(--gb-sitemap-tag-layout-hue, #14b8a6); }   /* teal */
+	.gb-sitemap__tag[data-tag='API']      { --pill-hue: var(--gb-sitemap-tag-api-hue, #64748b); }      /* slate */
+	.gb-sitemap__tag[data-tag='Auth']     { --pill-hue: var(--gb-sitemap-tag-auth-hue, #f43f5e); }     /* rose */
+	.gb-sitemap__tag[data-tag='NoIndex']  { --pill-hue: var(--gb-sitemap-tag-noindex-hue, #94a3b8); }  /* grey */
+	.gb-sitemap__tag[data-tag='Internal'] { --pill-hue: var(--gb-sitemap-tag-internal-hue, var(--gb-sitemap-accent, #5d8c7b)); }
+	.gb-sitemap__tag[data-tag='Hidden']   { --pill-hue: var(--gb-sitemap-tag-hidden-hue, #be123c); }   /* deep rose */
 
 	.gb-sitemap__row-date {
 		color: var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent));
@@ -728,6 +746,9 @@ preprocessor, no `@goobits/ui` dependency.
 		font-size: 0.72rem;
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
+		min-width: 5.5rem;
+		text-align: right;
+		justify-self: end;
 	}
 
 	/* EMPTY */

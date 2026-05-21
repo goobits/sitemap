@@ -66,6 +66,46 @@ export interface ScanSvelteKitRoutesOptions {
 	serverGlob?: GlobResult
 
 	/**
+	 * If supplied, used to set `hasClientLoad: true` on entries whose
+	 * route has a sibling universal `+page.{ts,js}` module. Pass the
+	 * `import.meta.glob('/src/routes/**' + '/+page.{ts,js}')` result here.
+	 */
+	clientGlob?: GlobResult
+
+	/**
+	 * If supplied, used to set `hasLayout: true` on entries that share
+	 * a directory with a `+layout.svelte`. Pass the
+	 * `import.meta.glob('/src/routes/**' + '/+layout.svelte')` result
+	 * here. Useful as a signal for "this route defines a nested layout
+	 * root", not "this route inherits one".
+	 */
+	layoutGlob?: GlobResult
+
+	/**
+	 * Per-route policy hook for flags the filesystem can't tell us
+	 * about: `hasAuth`, `isNoIndex`, `sitemap` (`'public'` | `'internal'` |
+	 * `'hidden'`). Receives the cleaned route path; return any subset of
+	 * `PageEntryOverrides` to merge in. Use this to mark protected
+	 * routes, intentionally non-indexed pages, or internal/admin entries.
+	 *
+	 * @example
+	 * ```ts
+	 * flags: (path) => {
+	 *   if (path.startsWith('/account/')) return { hasAuth: true }
+	 *   if (path === '/internal/debug') return { sitemap: 'internal', isNoIndex: true }
+	 *   return {}
+	 * }
+	 * ```
+	 */
+	flags?: (routePath: string) => Partial<{
+		hasAuth: boolean
+		isNoIndex: boolean
+		hasLayout: boolean
+		hasClientLoad: boolean
+		sitemap: 'public' | 'internal' | 'hidden'
+	}>
+
+	/**
 	 * Roots stripped from glob keys before processing. Default: `['/src/routes']`.
 	 * If your routes live elsewhere, pass that prefix.
 	 */
@@ -74,6 +114,8 @@ export interface ScanSvelteKitRoutesOptions {
 
 const PAGE_SUFFIX_RE = /\/\+page\.svelte$/
 const SERVER_SUFFIX_RE = /\/\+page\.server\.(?:ts|js|mts|mjs)$/
+const CLIENT_SUFFIX_RE = /\/\+page\.(?:ts|js|mts|mjs)$/
+const LAYOUT_SUFFIX_RE = /\/\+layout\.svelte$/
 const ROUTE_GROUP_RE = /\/\([^)]+\)/g
 const DYNAMIC_RE = /\[[^/]+]/
 
@@ -109,12 +151,12 @@ function rawToRoutePath(raw: string, rootPrefix: string): string {
 }
 
 /**
- * Same transform but for `+page.server.*` modules — used to detect
- * which routes have a server-side load function.
+ * Same transform but for sibling-module globs — used to detect server
+ * load, universal load, or layout siblings of a `+page.svelte`.
  */
-function rawServerToRoutePath(raw: string, rootPrefix: string): string {
+function rawSiblingToRoutePath(raw: string, rootPrefix: string, suffixRe: RegExp): string {
 	const noRoot = raw.startsWith(rootPrefix) ? raw.slice(rootPrefix.length) : raw
-	const noSuffix = noRoot.replace(SERVER_SUFFIX_RE, '')
+	const noSuffix = noRoot.replace(suffixRe, '')
 	const noGroups = noSuffix.replace(ROUTE_GROUP_RE, '')
 	return noGroups === '' ? '/' : noGroups
 }
@@ -163,14 +205,30 @@ export function scanSvelteKitRoutes(
 	const exclude = options.exclude ?? (() => false)
 	const skipDynamic = options.skipDynamic ?? true
 
-	// Build a Set of route paths that have a server load (so we can stamp
-	// `hasServerLoad: true` on the corresponding page entries).
+	// Build path-sets for each sibling-module glob so we can stamp the
+	// corresponding flag on each page entry.
 	const serverRoutes = new Set<string>()
 	if (options.serverGlob) {
 		for (const rawKey of Object.keys(options.serverGlob)) {
-			serverRoutes.add(rawServerToRoutePath(rawKey, rootPrefix))
+			serverRoutes.add(rawSiblingToRoutePath(rawKey, rootPrefix, SERVER_SUFFIX_RE))
 		}
 	}
+
+	const clientRoutes = new Set<string>()
+	if (options.clientGlob) {
+		for (const rawKey of Object.keys(options.clientGlob)) {
+			clientRoutes.add(rawSiblingToRoutePath(rawKey, rootPrefix, CLIENT_SUFFIX_RE))
+		}
+	}
+
+	const layoutRoutes = new Set<string>()
+	if (options.layoutGlob) {
+		for (const rawKey of Object.keys(options.layoutGlob)) {
+			layoutRoutes.add(rawSiblingToRoutePath(rawKey, rootPrefix, LAYOUT_SUFFIX_RE))
+		}
+	}
+
+	const flagsFn: NonNullable<ScanSvelteKitRoutesOptions['flags']> = options.flags ?? (() => ({}))
 
 	const out: PageRouteEntry[] = []
 
@@ -181,10 +239,17 @@ export function scanSvelteKitRoutes(
 		const isDynamic = DYNAMIC_RE.test(routePath)
 		if (skipDynamic && isDynamic) continue
 
+		const consumerFlags = flagsFn(routePath)
+
 		out.push(
 			createPageEntry(routePath, name(routePath), category(routePath), lastModified(routePath), {
 				hasServerLoad: serverRoutes.has(routePath),
-				isDynamic
+				hasClientLoad: consumerFlags.hasClientLoad ?? clientRoutes.has(routePath),
+				hasLayout: consumerFlags.hasLayout ?? layoutRoutes.has(routePath),
+				isDynamic,
+				...(consumerFlags.hasAuth !== undefined ? { hasAuth: consumerFlags.hasAuth } : {}),
+				...(consumerFlags.isNoIndex !== undefined ? { isNoIndex: consumerFlags.isNoIndex } : {}),
+				...(consumerFlags.sitemap !== undefined ? { sitemap: consumerFlags.sitemap } : {})
 			})
 		)
 	}

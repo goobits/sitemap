@@ -66,8 +66,28 @@ export type RouteInventory = {
 	stats: RouteInventoryStats
 }
 
-/** Minimal record needed to render a single `<url>` element. */
+/** Sitemap `<changefreq>` values per the sitemaps.org spec. */
+export type SitemapChangeFreq =
+	| 'always'
+	| 'hourly'
+	| 'daily'
+	| 'weekly'
+	| 'monthly'
+	| 'yearly'
+	| 'never'
+
+/**
+ * Minimal record needed to render a single `<url>` element.
+ *
+ * `changefreq` and `priority` are part of the sitemap spec but are now
+ * largely ignored by major crawlers (Google explicitly says it doesn't
+ * use them). They're supported as optional fields for consumers that
+ * still emit them.
+ */
 export type SitemapRoute = {
 	path: string
 	lastModified: string
+	changefreq?: SitemapChangeFreq
+	/** A value in `[0.0, 1.0]`. Default per spec is `0.5`. */
+	priority?: number
 }
