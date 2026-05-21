@@ -1,0 +1,72 @@
+{
+	"name": "@goobits/sitemap",
+	"version": "0.2.0",
+	"description": "Reusable sitemap core, server helpers, and ops layer (search-engine pings + URL HEAD validation) for SvelteKit and any modern Fetch-API runtime",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"sideEffects": false,
+	"exports": {
+		".": "./src/index.ts",
+		"./core": "./src/core.ts",
+		"./server": "./src/server.ts",
+		"./ops": "./src/ops.ts",
+		"./sveltekit": "./src/sveltekit.ts",
+		"./ui": "./src/ui.ts",
+		"./ui/SitemapPage.svelte": "./src/ui/SitemapPage.svelte"
+	},
+	"keywords": [
+		"sitemap",
+		"sitemap.xml",
+		"sveltekit",
+		"svelte",
+		"svelte-5",
+		"seo",
+		"search-engine",
+		"indexnow",
+		"xml",
+		"esm"
+	],
+	"author": "Goobits",
+	"license": "MIT",
+	"homepage": "https://github.com/goobits/sitemap#readme",
+	"bugs": "https://github.com/goobits/sitemap/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/goobits/sitemap.git"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"packageManager": "pnpm@10.13.1",
+	"peerDependencies": {
+		"@sveltejs/kit": "^2.0.0",
+		"svelte": "^5.0.0",
+		"typescript": "^5.0.0"
+	},
+	"peerDependenciesMeta": {
+		"@sveltejs/kit": {
+			"optional": true
+		},
+		"svelte": {
+			"optional": true
+		},
+		"typescript": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.0",
+		"svelte": "^5.0.0",
+		"svelte-check": "^4.0.0",
+		"typescript": "^5.9.0",
+		"vitest": "^4.0.0"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && svelte-check --workspace src/ui --fail-on-warnings",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"clean": "rm -rf node_modules .turbo"
+	}
+}
