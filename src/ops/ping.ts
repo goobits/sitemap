@@ -12,7 +12,7 @@
  * @module @goobits/sitemap/ops
  */
 
-import { type RetryOptions, fetchWithTimeout, retry } from './http.js'
+import { type RetryOptions, fetchWithTimeout, retry } from './http.ts'
 
 /** A single search-engine ping target. `baseUrl` is the URL prefix; the sitemap URL is URL-encoded and appended. */
 export type SearchEnginePingTarget = {

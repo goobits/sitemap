@@ -6,7 +6,7 @@
  * @module @goobits/sitemap/ui
  */
 
-import type { SitemapSort } from '../core.js'
+import type { SitemapSort } from '../core.ts'
 
 /** Visual tone for a category section. */
 export type CategoryTone = 'primary' | 'secondary'

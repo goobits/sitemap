@@ -7,13 +7,13 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit'
-import type { SitemapRoute } from '../core/types.js'
+import type { SitemapRoute } from '../core/types.ts'
 import {
 	buildSitemapXml,
 	getBaseUrl,
 	getPlatformEnv,
 	resolveSiteOrigin
-} from '../server/xml.js'
+} from '../server/xml.ts'
 
 /** Options for `createSitemapXmlHandler`. */
 export interface SitemapXmlHandlerOptions {

@@ -20,5 +20,5 @@
  * @module @goobits/sitemap
  */
 
-export * from './core.js'
-export * from './server.js'
+export * from './core.ts'
+export * from './server.ts'

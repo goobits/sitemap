@@ -16,10 +16,10 @@ export {
 	type SitemapXmlHandlerOptions,
 	createRobotsTxtHandler,
 	createSitemapXmlHandler
-} from './sveltekit/handlers.js'
+} from './sveltekit/handlers.ts'
 
 export {
 	type GlobResult,
 	type ScanSvelteKitRoutesOptions,
 	scanSvelteKitRoutes
-} from './sveltekit/scanner.js'
+} from './sveltekit/scanner.ts'

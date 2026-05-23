@@ -12,8 +12,8 @@
  * @module @goobits/sitemap/sveltekit
  */
 
-import type { PageRouteEntry } from '../core/types.js'
-import { createPageEntry } from '../core/builders.js'
+import type { PageRouteEntry } from '../core/types.ts'
+import { createPageEntry } from '../core/builders.ts'
 
 /** A Vite `import.meta.glob` result. Keys are absolute-ish source paths. */
 export type GlobResult = Record<string, unknown>

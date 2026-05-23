@@ -16,4 +16,4 @@
  */
 
 export { default as SitemapPage } from './ui/SitemapPage.svelte'
-export type { CategoryMeta, CategoryTone, SortOption } from './ui/types.js'
+export type { CategoryMeta, CategoryTone, SortOption } from './ui/types.ts'

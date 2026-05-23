@@ -15,4 +15,4 @@ export {
 	getPlatformEnv,
 	resolveSiteOrigin,
 	toAbsoluteUrl
-} from './server/xml.js'
+} from './server/xml.ts'

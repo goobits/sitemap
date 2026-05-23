@@ -9,7 +9,7 @@
  * @module @goobits/sitemap/server
  */
 
-import type { SitemapRoute } from '../core/types.js'
+import type { SitemapRoute } from '../core/types.ts'
 
 function trimTrailingSlash(value: string) {
 	return value.endsWith('/') ? value.slice(0, -1) : value

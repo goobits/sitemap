@@ -13,7 +13,7 @@ import type {
 	RouteInventory,
 	RouteInventoryStats,
 	SitemapEntry
-} from './types.js'
+} from './types.ts'
 
 /** Optional overrides for the metadata flags on a page entry. */
 export interface PageEntryOverrides {

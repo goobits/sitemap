@@ -13,7 +13,7 @@ export {
 	type SitemapPingResult,
 	HISTORICAL_PING_ENDPOINTS,
 	pingSearchEngines
-} from './ops/ping.js'
+} from './ops/ping.ts'
 
 export {
 	type SitemapUrlHeadResult,
@@ -21,4 +21,4 @@ export {
 	type ValidateLogger,
 	type ValidateSitemapUrlsOptions,
 	validateSitemapUrls
-} from './ops/validate.js'
+} from './ops/validate.ts'

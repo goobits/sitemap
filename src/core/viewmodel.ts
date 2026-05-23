@@ -7,7 +7,7 @@
  * @module @goobits/sitemap/core
  */
 
-import type { HumanSitemapVisibility, SitemapAudience, SitemapEntry, SitemapSort } from './types.js'
+import type { HumanSitemapVisibility, SitemapAudience, SitemapEntry, SitemapSort } from './types.ts'
 
 function localeSort(a: string, b: string) {
 	return a.localeCompare(b)

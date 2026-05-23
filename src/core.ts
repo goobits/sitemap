@@ -16,7 +16,7 @@ export type {
 	SitemapEntry,
 	SitemapRoute,
 	SitemapSort
-} from './core/types.js'
+} from './core/types.ts'
 
 export {
 	baseSitemapTags,
@@ -26,7 +26,7 @@ export {
 	getSitemapAudiencesForVisibility,
 	getSitemapAvailableTags,
 	internalSitemapTags
-} from './core/viewmodel.js'
+} from './core/viewmodel.ts'
 
 export {
 	type ApiEntryOverrides,
@@ -36,4 +36,4 @@ export {
 	createPageEntry,
 	createRouteInventory,
 	groupRoutesByCategory
-} from './core/builders.js'
+} from './core/builders.ts'

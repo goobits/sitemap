@@ -11,7 +11,7 @@
  * @module @goobits/sitemap/ops
  */
 
-import { fetchWithTimeout } from './http.js'
+import { fetchWithTimeout } from './http.ts'
 
 /** Outcome for a single URL's HEAD probe. */
 export type SitemapUrlHeadResult =

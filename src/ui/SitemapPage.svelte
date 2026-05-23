@@ -32,8 +32,8 @@ preprocessor, no `@goobits/ui` dependency.
 		type RouteInventoryStats,
 		type SitemapEntry,
 		type SitemapSort
-	} from '../core.js'
-	import type { CategoryMeta, SortOption } from './types.js'
+	} from '../core.ts'
+	import type { CategoryMeta, SortOption } from './types.ts'
 
 	interface Props {
 		/** The shape returned by `getPublicRouteInventory()` (or any host equivalent). */

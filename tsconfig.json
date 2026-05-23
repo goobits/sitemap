@@ -22,6 +22,7 @@
 		"noUncheckedIndexedAccess": true,
 
 		"esModuleInterop": true,
+		"allowImportingTsExtensions": true,
 		"allowSyntheticDefaultImports": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
