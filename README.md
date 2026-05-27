@@ -36,7 +36,7 @@ git submodule add git@github.com:goobits/sitemap.git packages/sitemap
 ```yaml
 # pnpm-workspace.yaml
 packages:
-  - sites/*
+  - apps/*
   - packages/*
 ```
 
