@@ -412,7 +412,7 @@ export function getPublicRouteInventory() {
 
 `createPageEntry` / `createApiEntry` fill in sensible defaults (public, static, non-dynamic, no auth) so you only specify what differs. `createRouteInventory` handles the grouping + stats computation.
 
-## Subpath exports
+## Entrypoints
 
 | Subpath | What's exported |
 |---|---|
