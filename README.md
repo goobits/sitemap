@@ -2,25 +2,32 @@
 
 Reusable sitemap building blocks for SvelteKit (and any modern Fetch-API runtime). Pure filter/sort + visibility logic, XML and `sitemap-index.xml` generators, plus an operations layer for search-engine pings and URL HEAD validation. Zero runtime dependencies; consumers wire up route discovery in their host app.
 
+## TL;DR
+
+- Import `@goobits/sitemap/core` for types and filter logic, `/server` for XML builders, `/ops` for pings and URL validation, `/sveltekit` for drop-in handlers, `/ui` for the `<SitemapPage>` Svelte 5 component.
+- The package owns transformations; the host supplies route inventory, category mapping, and `lastModified` sources.
+- Distributed as a git submodule with TypeScript source. No build step, no `dist/`.
+- Node 22+, Bun, Deno, and Cloudflare Workers are all supported via `globalThis.fetch`.
+
 ## Highlights
 
-- 🧭 **Generic route inventory** — `SitemapEntry` types cover both page and API routes; host supplies the data, package supplies the transformations
-- 🔎 **Filter / sort / visibility** — pure functions for human-facing sitemap UIs with audience-aware tag filtering (`public` vs `internal`)
-- 📜 **XML generators** — `sitemap.xml` and `sitemap-index.xml` (for sites that shard past the 50k-URL limit)
-- 🌐 **Origin resolution** — 3-tier fallback: explicit `baseUrl` → request origin (non-localhost) → caller-supplied default
-- 📡 **Search-engine pings** — `pingSearchEngines` notifies a caller-supplied list of endpoints, with timeout + retry + per-engine result reporting
-- ✅ **URL validation** — `validateSitemapUrls` HEAD-checks a sampled URL list, surfaces 404s and timeouts, runs concurrent batches
-- 🪶 **No runtime dependencies** — uses `fetch` from `globalThis`; pure functions everywhere else
-- 🧩 **Pluggable logger** — `ops/*` accept a `Logger` interface; bring your own (Pino, Winston, console, or silent)
-- 📦 **ESM-only, TypeScript-native** — subpath exports for tree-shaking; runs on Node 22+, Bun, Deno, Cloudflare Workers
+- **Generic route inventory:** `SitemapEntry` types cover both page and API routes; host supplies the data, package supplies the transformations
+- **Filter / sort / visibility:** pure functions for human-facing sitemap UIs with audience-aware tag filtering (`public` vs `internal`)
+- **XML generators:** `sitemap.xml` and `sitemap-index.xml` (for sites that shard past the 50k-URL limit)
+- **Origin resolution:** 3-tier fallback: explicit `baseUrl` → request origin (non-localhost) → caller-supplied default
+- **Search-engine pings:** `pingSearchEngines` notifies a caller-supplied list of endpoints, with timeout + retry + per-engine result reporting
+- **URL validation:** `validateSitemapUrls` HEAD-checks a sampled URL list, surfaces 404s and timeouts, runs concurrent batches
+- **No runtime dependencies:** uses `fetch` from `globalThis`; pure functions everywhere else
+- **Pluggable logger:** `ops/*` accept a `Logger` interface; bring your own (Pino, Winston, console, or silent)
+- **ESM-only, TypeScript-native:** subpath exports for tree-shaking; runs on Node 22+, Bun, Deno, Cloudflare Workers
 
 ## Requirements
 
 - Node ≥22
 
-## Install
+## Usage
 
-`@goobits/sitemap` is distributed as a **git submodule with TypeScript source** — no build step, no `dist/`, no npm package. Consume it from a workspace whose bundler (Vite, esbuild, SvelteKit, Bun, Deno, etc.) handles `.ts` natively.
+`@goobits/sitemap` is distributed as a **git submodule with TypeScript source**: no build step, no `dist/`, no npm package. Consume it from a workspace whose bundler (Vite, esbuild, SvelteKit, Bun, Deno, etc.) handles `.ts` natively.
 
 ### Why source-only?
 
@@ -189,7 +196,7 @@ for (const result of results) {
 }
 ```
 
-ℹ️ **A note on search-engine ping endpoints.** Google retired its public sitemap ping in 2023; Bing has signaled its endpoint may follow. The package ships *no* default engine list — you opt into the targets you actually want to notify. `HISTORICAL_PING_ENDPOINTS` is exported as a reference, not a default.
+ℹ️ **A note on search-engine ping endpoints.** Google retired its public sitemap ping in 2023; Bing has signaled its endpoint may follow. The package ships *no* default engine list. You opt into the targets you actually want to notify. `HISTORICAL_PING_ENDPOINTS` is exported as a reference, not a default.
 
 ## URL HEAD validation
 
@@ -211,11 +218,11 @@ if (invalid > 0) {
 }
 ```
 
-The validator takes URLs directly — the host samples whatever set it wants to check (recent posts, random users, every static page, etc.).
+The validator takes URLs directly. The host samples whatever set it wants to check (recent posts, random users, every static page, etc.).
 
 ## Ready-made page (Svelte 5)
 
-If you want a working, themable sitemap page in one line, import the bundled `<SitemapPage>` component. The `data` prop is just the standard SvelteKit page-load shape — provide `grouped` + `stats` from your route inventory:
+If you want a working, themable sitemap page in one line, import the bundled `<SitemapPage>` component. The `data` prop is just the standard SvelteKit page-load shape. Provide `grouped` + `stats` from your route inventory:
 
 ```ts
 // src/routes/sitemap/+page.server.ts
@@ -247,7 +254,7 @@ Built-in: hero (eyebrow + accent title + count pill), search, sort segmented con
 
 ### Theming
 
-Set any `--gb-sitemap-*` custom property on `:root`, a wrapping element via `:global(.parent)`, or inline `style`. They inherit normally through the cascade — no shadowing:
+Set any `--gb-sitemap-*` custom property on `:root`, a wrapping element via `:global(.parent)`, or inline `style`. They inherit normally through the cascade with no shadowing:
 
 ```css
 :root {
@@ -312,12 +319,12 @@ Full variable list:
     </div>
   {/snippet}
   {#snippet empty()}
-    <p>No matches — try clearing your filters?</p>
+    <p>No matches. Try clearing your filters?</p>
   {/snippet}
 </SitemapPage>
 ```
 
-The component pulls Svelte as an *optional* peer — consumers using only `/core`, `/server`, or `/ops` don't bundle it.
+The component pulls Svelte as an *optional* peer, so consumers using only `/core`, `/server`, or `/ops` don't bundle it.
 
 ## Drop-in SvelteKit endpoints
 
@@ -405,7 +412,7 @@ export function getPublicRouteInventory() {
 
 `createPageEntry` / `createApiEntry` fill in sensible defaults (public, static, non-dynamic, no auth) so you only specify what differs. `createRouteInventory` handles the grouping + stats computation.
 
-## Subpath exports
+## Entrypoints
 
 | Subpath | What's exported |
 |---|---|
@@ -430,4 +437,4 @@ All modules use only `globalThis.fetch` for network operations. None import from
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT. See [LICENSE](./LICENSE).
