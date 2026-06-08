@@ -6,9 +6,9 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import {
 	checkSvelteKitRouteChannelPolicy,
-	generateSvelteKitRouteChannel
+	generateSvelteKitRouteChannel,
+	type SvelteKitRouteChannelPolicy
 } from '../src/sveltekit/channels.js'
-import type { SvelteKitRouteChannelPolicy } from '../src/sveltekit/channels.js'
 
 let tempRoots: string[] = []
 
