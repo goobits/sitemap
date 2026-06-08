@@ -9,6 +9,10 @@ export type {
 	ApiRouteEntry,
 	HumanSitemapVisibility,
 	PageRouteEntry,
+	RouteChannel,
+	RouteChannelPolicy,
+	RouteChannelPolicyIssues,
+	RouteChannelTags,
 	RouteInventory,
 	RouteInventoryStats,
 	SitemapAudience,
@@ -37,3 +41,13 @@ export {
 	createRouteInventory,
 	groupRoutesByCategory
 } from './core/builders.ts'
+
+export {
+	type RouteChannelPolicyCheckOptions,
+	type RouteChannelRouteType,
+	checkRouteChannelPolicy,
+	filterEntriesForRouteChannel,
+	getRouteChannelTags,
+	isRouteInChannel,
+	normalizeRouteChannel
+} from './core/channels.ts'

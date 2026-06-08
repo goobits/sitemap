@@ -18,6 +18,26 @@ export type HumanSitemapVisibility = 'public' | 'internal'
 /** Sort order for a sitemap listing. */
 export type SitemapSort = 'path' | 'name' | 'modified'
 
+/** Deployment or route-surface label used to include/exclude routes. */
+export type RouteChannel = string
+
+/** Route path to channel list mapping supplied by a host app. */
+export type RouteChannelTags = Record<string, readonly RouteChannel[]>
+
+/** Host-owned route-channel policy. */
+export type RouteChannelPolicy = {
+	channels: readonly RouteChannel[]
+	routeTags: RouteChannelTags
+	apiRouteTags?: RouteChannelTags
+}
+
+/** Validation result for a route-channel policy. */
+export type RouteChannelPolicyIssues = {
+	missing: string[]
+	invalid: string[]
+	stale: string[]
+}
+
 /** Sitemap entry for a UI/page route (renders HTML). */
 export type PageRouteEntry = {
 	path: string

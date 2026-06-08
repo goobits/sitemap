@@ -23,3 +23,13 @@ export {
 	type ScanSvelteKitRoutesOptions,
 	scanSvelteKitRoutes
 } from './sveltekit/scanner.ts'
+
+export {
+	type CheckSvelteKitRouteChannelPolicyOptions,
+	type GenerateSvelteKitRouteChannelOptions,
+	type GenerateSvelteKitRouteChannelResult,
+	type SvelteKitRouteChannelPolicy,
+	checkSvelteKitRouteChannelPolicy,
+	generateSvelteKitRouteChannel,
+	getSvelteKitGeneratedRoutesRoot
+} from './sveltekit/channels.ts'
