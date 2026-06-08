@@ -38,7 +38,6 @@
 	"engines": {
 		"node": ">=22"
 	},
-	"packageManager": "pnpm@10.13.1",
 	"peerDependencies": {
 		"@sveltejs/kit": "^2.0.0",
 		"svelte": "^5.0.0",
