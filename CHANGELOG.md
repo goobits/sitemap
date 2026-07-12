@@ -2,6 +2,23 @@
 
 All notable changes to `@goobits/sitemap` are documented here. The format adheres to [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added runtime-agnostic route-channel policy validation and inventory
+  filtering under `/core`.
+- Added build-time SvelteKit route-channel checking and route-tree generation
+  under `/sveltekit`.
+
+### Changed
+
+- Documented the Node filesystem boundary of route-tree generation separately
+  from the cross-runtime core, server, and operations surfaces.
+- Declared the Vitest V8 coverage provider directly so standalone coverage
+  runs do not depend on a parent workspace installation.
+- Declared the same pnpm toolchain used by the consuming workspace.
+
 ## [0.2.0] - 2026-05-21
 
 Adds drop-in SvelteKit endpoints, a filesystem-route auto-scanner, and `core` builders. No breaking changes from v0.1.0.

@@ -38,6 +38,7 @@
 	"engines": {
 		"node": ">=22"
 	},
+	"packageManager": "pnpm@11.10.0",
 	"peerDependencies": {
 		"@sveltejs/kit": "^2.0.0",
 		"svelte": "^5.0.0",
@@ -56,10 +57,11 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.10.0",
+		"@vitest/coverage-v8": "^4.1.10",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.9.0",
-		"vitest": "^4.0.0"
+		"vitest": "^4.1.10"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && svelte-check --workspace src/ui --fail-on-warnings",

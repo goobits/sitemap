@@ -1,8 +1,8 @@
 /**
  * SvelteKit-specific helpers: `+server.ts` factories for the standard
- * `sitemap.xml` + `robots.txt` endpoints, and a route scanner that
- * derives entries from a Vite `import.meta.glob` result so you don't
- * have to hand-maintain the inventory.
+ * `sitemap.xml` + `robots.txt` endpoints, a route scanner that derives
+ * entries from a Vite `import.meta.glob` result, and build-time generation
+ * of route trees from host-owned route-channel policy.
  *
  * Requires `@sveltejs/kit ^2` at the consumer level (declared as an
  * optional peer; consumers using only `/core`, `/server`, `/ops`, or

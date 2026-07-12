@@ -9,7 +9,7 @@ Reusable sitemap core, server helpers, and operations layer for SvelteKit (and a
 - **Category:** library (ESM-only, TypeScript)
 - **Distribution:** git submodule consumed inside a pnpm workspace. Consumer bundlers (Vite/esbuild/SvelteKit) compile the `.ts` source directly — no build step, no `dist/`, no npm publish.
 - **Primary stack:** TypeScript 5.9 + vitest + svelte-check (for the `/ui` subpath). No runtime dependencies. Optional peer-deps: `@sveltejs/kit ^2`, `svelte ^5` (only needed for the `/ui` subpath), `typescript ^5`.
-- **Runtime targets:** Node 22+, Bun, Deno, Cloudflare Workers (anything with `fetch` on `globalThis` for the `ops` subpath; `core` runs anywhere).
+- **Runtime targets:** `core` and `server` are runtime-agnostic; `ops` needs `fetch`; SvelteKit route-channel generation is a Node build-time tool.
 - **Engines:** Node `>=22`
 
 ## Commands
@@ -26,11 +26,12 @@ pnpm test:coverage  # vitest run --coverage
 
 ```
 src/
-├── core.ts          # barrel: types + viewmodel + builders
+├── core.ts          # barrel: types + viewmodel + builders + route channels
 ├── core/
 │   ├── types.ts     # RouteInventory, SitemapEntry, SitemapAudience, etc.
 │   ├── viewmodel.ts # getFilteredSitemapGroups, getRouteTags, audience mapping
-│   └── builders.ts  # createPageEntry, createApiEntry, createRouteInventory, …
+│   ├── builders.ts  # createPageEntry, createApiEntry, createRouteInventory, …
+│   └── channels.ts  # host-owned route-channel policy validation + filtering
 ├── server.ts        # barrel: XML + origin resolution
 ├── server/
 │   └── xml.ts       # buildSitemapXml, buildSitemapIndexXml, resolveSiteOrigin, escapeXml
@@ -39,8 +40,9 @@ src/
 │   ├── http.ts      # @internal: fetchWithTimeout + retry helper
 │   ├── ping.ts      # pingSearchEngines + result types
 │   └── validate.ts  # validateSitemapUrls (URL HEAD-check)
-├── sveltekit.ts     # barrel: handler factories + scanner
+├── sveltekit.ts     # barrel: handlers + scanner + route-channel generation
 ├── sveltekit/
+│   ├── channels.ts  # check/generate channel-specific SvelteKit route trees
 │   ├── handlers.ts  # createSitemapXmlHandler + createRobotsTxtHandler
 │   └── scanner.ts   # scanSvelteKitRoutes (import.meta.glob → SitemapEntry[])
 ├── ui.ts            # barrel: SitemapPage + CategoryMeta/Tone/SortOption types
@@ -79,10 +81,12 @@ This package owns:
 - Origin resolution from explicit baseUrl → request → fallback
 - Search-engine ping orchestration (with retry + timeout)
 - URL HEAD validation (with concurrency + bounded error output)
+- Route-channel policy validation, filtering, and SvelteKit route-tree generation mechanics
 
 The host application owns:
 
-- Filesystem route scanning and SvelteKit-specific route discovery
+- The filesystem/glob inputs used for SvelteKit route discovery
+- Route-channel names, route tags, private-directory policy, variants, and deployment wiring
 - Category mapping (which paths belong to which group)
 - Sitemap audience matchers (which paths are `public` / `internal` / `hidden`)
 - `lastModified` source (git log, mtime, content store, etc.)
@@ -96,6 +100,7 @@ If a future capability needs DB access or business-domain knowledge, it belongs 
 
 - Public API barrel: `src/index.ts`
 - Per-capability subpath: `src/<name>.ts` (re-exports from `src/<name>/*.ts`)
+- Route-channel mechanics: `src/core/channels.ts` and `src/sveltekit/channels.ts`
 - UI component: `src/ui/SitemapPage.svelte`; its types live next to it at `src/ui/types.ts`
 - Tests for each module: `tests/<name>.test.ts`
 - Test config: `vitest.config.ts`

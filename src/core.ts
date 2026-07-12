@@ -1,6 +1,7 @@
 /**
- * Runtime-agnostic surface: types, filter/sort, audience mapping. Safe to
- * import from any module (server, client, edge, build script).
+ * Runtime-agnostic surface: types, filter/sort, audience mapping, and
+ * route-channel policy helpers. Safe to import from any module (server,
+ * client, edge, build script).
  *
  * @module @goobits/sitemap/core
  */

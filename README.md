@@ -7,6 +7,7 @@ Reusable sitemap building blocks for SvelteKit (and any modern Fetch-API runtime
 - Add as a pnpm workspace git submodule and import from `@goobits/sitemap/core`, `/server`, `/ops`, `/sveltekit`, or `/ui`.
 - Build a `RouteInventory` in your host app (via `scanSvelteKitRoutes` or `createRouteInventory`), then pass it to the XML builders.
 - Use `createSitemapXmlHandler` and `createRobotsTxtHandler` for drop-in SvelteKit endpoints.
+- Validate/filter host-owned route channels in `/core`, and generate channel-specific SvelteKit route trees with `/sveltekit`.
 - Use `<SitemapPage>` from `@goobits/sitemap/ui` for a ready-made, themable human-facing sitemap page.
 
 ## Highlights
@@ -15,9 +16,10 @@ Reusable sitemap building blocks for SvelteKit (and any modern Fetch-API runtime
 - **Filter / sort / visibility:** pure functions for human-facing sitemap UIs with audience-aware tag filtering (`public` vs `internal`)
 - **XML generators:** `sitemap.xml` and `sitemap-index.xml` (for sites that shard past the 50k-URL limit)
 - **Origin resolution:** 3-tier fallback: explicit `baseUrl` → request origin (non-localhost) → caller-supplied default
+- **Route channels:** validates complete host-owned channel maps, filters inventories, and generates channel-specific SvelteKit route trees at build time
 - **Search-engine pings:** `pingSearchEngines` notifies a caller-supplied list of endpoints, with timeout + retry + per-engine result reporting
 - **URL validation:** `validateSitemapUrls` HEAD-checks a sampled URL list, surfaces 404s and timeouts, runs concurrent batches
-- **No runtime dependencies:** uses `fetch` from `globalThis`; pure functions everywhere else
+- **No third-party runtime dependencies:** `/ops` uses `fetch` from `globalThis`; route-channel generation uses Node filesystem APIs at build time
 - **Pluggable logger:** `ops/*` accept a `Logger` interface; bring your own (Pino, Winston, console, or silent)
 - **ESM-only, TypeScript-native:** subpath exports for tree-shaking; runs on Node 22+, Bun, Deno, Cloudflare Workers
 
@@ -84,6 +86,7 @@ The package owns the *transformations*. The host application owns the *route inv
 | Filter / sort / visibility logic | Audience matching (`public` / `internal` / `hidden`) |
 | XML generation (`sitemap.xml`, `sitemap-index.xml`) | `lastModified` source (git log, mtime, content store) |
 | Origin resolution | Page UI, brand copy, presentation |
+| Route-channel validation, filtering, and route-tree generation mechanics | Channel names, route tags, variants, and deployment wiring |
 | Search-engine ping orchestration | Change detection (DB / cron / webhook) |
 | URL HEAD validation | URL sampling strategy |
 
@@ -101,6 +104,64 @@ import { pingSearchEngines, validateSitemapUrls } from '@goobits/sitemap/ops'
 ```
 
 The `core` and `server` surfaces are also re-exported from the root for convenience. `ops` is intentionally *not* in the barrel so consumers that only build XML don't pull `fetch`-coupled code into client bundles.
+
+## Route channels
+
+Route channels let a host describe which page and API routes belong in each
+deployment surface without moving that product policy into this package. The
+core helpers validate that every discovered route is classified and can filter
+an existing inventory:
+
+```ts
+import {
+  checkRouteChannelPolicy,
+  filterEntriesForRouteChannel,
+  type RouteChannelPolicy
+} from '@goobits/sitemap/core'
+
+const policy: RouteChannelPolicy = {
+  channels: ['prod', 'dev'],
+  routeTags: {
+    '/': ['prod', 'dev'],
+    '/demo': ['dev']
+  },
+  apiRouteTags: {
+    '/api/demo': ['dev']
+  }
+}
+
+const issues = checkRouteChannelPolicy(policy, {
+  pageRoutes: ['/', '/demo'],
+  apiRoutes: ['/api/demo']
+})
+const prodEntries = filterEntriesForRouteChannel(inventory.routes, policy, 'prod')
+```
+
+For filesystem-backed SvelteKit builds, `checkSvelteKitRouteChannelPolicy`
+compares the policy with the source route tree and
+`generateSvelteKitRouteChannel` copies the selected routes, ancestor layouts,
+declared private directories, and optional per-channel variants into a generated
+root. The host remains responsible for failing on reported issues and wiring the
+generated root into its build/deployment process.
+
+```ts
+import {
+  checkSvelteKitRouteChannelPolicy,
+  generateSvelteKitRouteChannel
+} from '@goobits/sitemap/sveltekit'
+
+const issues = await checkSvelteKitRouteChannelPolicy({ sourceRoutesRoot, policy })
+if (issues.missing.length || issues.invalid.length || issues.stale.length) {
+  throw new Error(`Invalid route-channel policy: ${JSON.stringify(issues)}`)
+}
+
+await generateSvelteKitRouteChannel({
+  sourceRoutesRoot,
+  generatedRoutesRoot,
+  channel: 'prod',
+  policy
+})
+```
 
 ---
 
@@ -417,10 +478,10 @@ export function getPublicRouteInventory() {
 | Subpath | What's exported |
 |---|---|
 | `@goobits/sitemap` | Barrel: re-exports `core` + `server` (NOT `ops`, `sveltekit`, or `ui`) |
-| `@goobits/sitemap/core` | Types + filter/sort/visibility helpers + `createPageEntry` / `createApiEntry` / `createRouteInventory` builders. Runtime-agnostic. |
+| `@goobits/sitemap/core` | Types + filter/sort/visibility helpers + inventory builders + route-channel policy validation/filtering. Runtime-agnostic. |
 | `@goobits/sitemap/server` | XML builders + origin resolution. Pure, no network. |
 | `@goobits/sitemap/ops` | `pingSearchEngines` + `validateSitemapUrls`. Server-side, `fetch`-dependent. |
-| `@goobits/sitemap/sveltekit` | `createSitemapXmlHandler`, `createRobotsTxtHandler`, `scanSvelteKitRoutes`. Requires `@sveltejs/kit ^2`. |
+| `@goobits/sitemap/sveltekit` | Endpoint factories, route scanning, and route-channel policy checking/generation. Requires `@sveltejs/kit ^2`. |
 | `@goobits/sitemap/ui` | `<SitemapPage>` themable Svelte 5 component. Requires `svelte ^5`. |
 
 ## Per-module runtime compatibility
@@ -430,8 +491,12 @@ export function getPublicRouteInventory() {
 | `core` | ✅ | ✅ | ✅ | ✅ |
 | `server` | ✅ | ✅ | ✅ | ✅ |
 | `ops` | ✅ | ✅ | ✅ | ✅ (uses global `fetch`) |
+| `sveltekit` route generation | ✅ (build time) | not certified | not certified | ❌ (build-time filesystem API) |
 
-All modules use only `globalThis.fetch` for network operations. None import from `node:fs`, `node:http`, `node:net`, or any other Node-only built-ins.
+`core`, `server`, and `ops` import no Node-only built-ins. The route-channel
+generation functions exported from `/sveltekit` intentionally use `node:fs`
+and `node:path` at build time; generated application routes may still target a
+different SvelteKit runtime.
 
 > Continuous integration exercises Node 22. Bun, Deno, and Cloudflare Workers are validated manually; if you hit a runtime-specific issue, please open an issue with the runtime version and a minimal repro.
 
