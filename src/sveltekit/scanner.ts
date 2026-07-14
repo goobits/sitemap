@@ -127,11 +127,13 @@ function defaultName(routePath: string): string {
 	if (routePath === '/') return 'Home'
 	const last = routePath.split('/').filter(Boolean).pop() ?? ''
 	const cleaned = last.replace(/^\(.+\)$/, '')
-	return cleaned
-		.split('-')
-		.filter(Boolean)
-		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-		.join(' ') || 'Home'
+	return (
+		cleaned
+			.split('-')
+			.filter(Boolean)
+			.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+			.join(' ') || 'Home'
+	)
 }
 
 function defaultLastModified(): string {

@@ -162,7 +162,7 @@ describe('buildSitemapIndexXml', () => {
 	})
 
 	it('escapes loc values', () => {
-		const xml = buildSitemapIndexXml([ { loc: 'https://example.com/a&b' } ])
+		const xml = buildSitemapIndexXml([{ loc: 'https://example.com/a&b' }])
 		expect(xml).toContain('&amp;')
 	})
 })
@@ -264,7 +264,8 @@ describe('getBaseUrl', () => {
 	afterEach(() => {
 		if (originalProcessBaseUrl !== undefined) process.env['BASE_URL'] = originalProcessBaseUrl
 		else delete process.env['BASE_URL']
-		if (originalProcessPublicBaseUrl !== undefined) process.env['PUBLIC_BASE_URL'] = originalProcessPublicBaseUrl
+		if (originalProcessPublicBaseUrl !== undefined)
+			process.env['PUBLIC_BASE_URL'] = originalProcessPublicBaseUrl
 		else delete process.env['PUBLIC_BASE_URL']
 	})
 
@@ -280,7 +281,9 @@ describe('getBaseUrl', () => {
 	})
 
 	it('falls back to platform env when process.env has neither', () => {
-		expect(getBaseUrl({ PUBLIC_BASE_URL: 'https://platform.example.com' })).toBe('https://platform.example.com')
+		expect(getBaseUrl({ PUBLIC_BASE_URL: 'https://platform.example.com' })).toBe(
+			'https://platform.example.com'
+		)
 	})
 
 	it('returns undefined when nothing is set', () => {

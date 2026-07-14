@@ -47,7 +47,8 @@ describe('pingSearchEngines', () => {
 	it('reports per-engine success / failure without throwing on errors', async () => {
 		globalThis.fetch = vi.fn(async (url: RequestInfo | URL) => {
 			if (String(url).includes('a.example')) return new Response('', { status: 200 })
-			if (String(url).includes('b.example')) return new Response('', { status: 404, statusText: 'Not Found' })
+			if (String(url).includes('b.example'))
+				return new Response('', { status: 404, statusText: 'Not Found' })
 			throw new Error('network down')
 		}) as unknown as typeof fetch
 
@@ -82,7 +83,7 @@ describe('pingSearchEngines', () => {
 		}) as unknown as typeof fetch
 
 		const promise = pingSearchEngines('https://example.com/sitemap.xml', {
-			engines: [ { name: 'Flaky', baseUrl: 'https://x.example/ping?u=' } ],
+			engines: [{ name: 'Flaky', baseUrl: 'https://x.example/ping?u=' }],
 			retry: { retries: 2, delayMs: 0 }
 		})
 		await vi.runAllTimersAsync()
@@ -99,7 +100,7 @@ describe('pingSearchEngines', () => {
 		}) as unknown as typeof fetch
 
 		const promise = pingSearchEngines('https://example.com/sitemap.xml', {
-			engines: [ { name: 'X', baseUrl: 'https://x.example/ping?u=' } ],
+			engines: [{ name: 'X', baseUrl: 'https://x.example/ping?u=' }],
 			retry: { retries: 3, delayMs: 0 }
 		})
 		await vi.runAllTimersAsync()
@@ -110,17 +111,22 @@ describe('pingSearchEngines', () => {
 	})
 
 	it('invokes logger callbacks when provided', async () => {
-		globalThis.fetch = vi.fn(async () => new Response('', { status: 200 })) as unknown as typeof fetch
+		globalThis.fetch = vi.fn(
+			async () => new Response('', { status: 200 })
+		) as unknown as typeof fetch
 		const info = vi.fn()
 		const warn = vi.fn()
 		const error = vi.fn()
 		const promise = pingSearchEngines('https://example.com/sitemap.xml', {
-			engines: [ { name: 'A', baseUrl: 'https://a.example/?u=' } ],
+			engines: [{ name: 'A', baseUrl: 'https://a.example/?u=' }],
 			logger: { info, warn, error }
 		})
 		await vi.runAllTimersAsync()
 		await promise
-		expect(info).toHaveBeenCalledWith(expect.stringContaining('succeeded'), expect.objectContaining({ engine: 'A' }))
+		expect(info).toHaveBeenCalledWith(
+			expect.stringContaining('succeeded'),
+			expect.objectContaining({ engine: 'A' })
+		)
 		expect(warn).not.toHaveBeenCalled()
 		expect(error).not.toHaveBeenCalled()
 	})

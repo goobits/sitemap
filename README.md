@@ -78,17 +78,17 @@ git add packages/sitemap && git commit -m "chore: bump @goobits/sitemap"
 
 ## Mental model
 
-The package owns the *transformations*. The host application owns the *route inventory* (and decides which paths are public, what category they belong to, when each one was last modified). You build a `RouteInventory` from your filesystem scan / content store / DB / whatever; you hand it to the package helpers; you get filtered groups, XML, validation results back.
+The package owns the _transformations_. The host application owns the _route inventory_ (and decides which paths are public, what category they belong to, when each one was last modified). You build a `RouteInventory` from your filesystem scan / content store / DB / whatever; you hand it to the package helpers; you get filtered groups, XML, validation results back.
 
-| Package owns | Host owns |
-|---|---|
-| `SitemapEntry`, `RouteInventory` types | Filesystem route scanning, route categorization |
-| Filter / sort / visibility logic | Audience matching (`public` / `internal` / `hidden`) |
-| XML generation (`sitemap.xml`, `sitemap-index.xml`) | `lastModified` source (git log, mtime, content store) |
-| Origin resolution | Page UI, brand copy, presentation |
+| Package owns                                                             | Host owns                                                  |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `SitemapEntry`, `RouteInventory` types                                   | Filesystem route scanning, route categorization            |
+| Filter / sort / visibility logic                                         | Audience matching (`public` / `internal` / `hidden`)       |
+| XML generation (`sitemap.xml`, `sitemap-index.xml`)                      | `lastModified` source (git log, mtime, content store)      |
+| Origin resolution                                                        | Page UI, brand copy, presentation                          |
 | Route-channel validation, filtering, and route-tree generation mechanics | Channel names, route tags, variants, and deployment wiring |
-| Search-engine ping orchestration | Change detection (DB / cron / webhook) |
-| URL HEAD validation | URL sampling strategy |
+| Search-engine ping orchestration                                         | Change detection (DB / cron / webhook)                     |
+| URL HEAD validation                                                      | URL sampling strategy                                      |
 
 ## At a glance
 
@@ -103,7 +103,7 @@ import { buildSitemapXml, resolveSiteOrigin, toAbsoluteUrl } from '@goobits/site
 import { pingSearchEngines, validateSitemapUrls } from '@goobits/sitemap/ops'
 ```
 
-The `core` and `server` surfaces are also re-exported from the root for convenience. `ops` is intentionally *not* in the barrel so consumers that only build XML don't pull `fetch`-coupled code into client bundles.
+The `core` and `server` surfaces are also re-exported from the root for convenience. `ops` is intentionally _not_ in the barrel so consumers that only build XML don't pull `fetch`-coupled code into client bundles.
 
 ## Route channels
 
@@ -114,25 +114,25 @@ an existing inventory:
 
 ```ts
 import {
-  checkRouteChannelPolicy,
-  filterEntriesForRouteChannel,
-  type RouteChannelPolicy
+	checkRouteChannelPolicy,
+	filterEntriesForRouteChannel,
+	type RouteChannelPolicy
 } from '@goobits/sitemap/core'
 
 const policy: RouteChannelPolicy = {
-  channels: ['prod', 'dev'],
-  routeTags: {
-    '/': ['prod', 'dev'],
-    '/demo': ['dev']
-  },
-  apiRouteTags: {
-    '/api/demo': ['dev']
-  }
+	channels: ['prod', 'dev'],
+	routeTags: {
+		'/': ['prod', 'dev'],
+		'/demo': ['dev']
+	},
+	apiRouteTags: {
+		'/api/demo': ['dev']
+	}
 }
 
 const issues = checkRouteChannelPolicy(policy, {
-  pageRoutes: ['/', '/demo'],
-  apiRoutes: ['/api/demo']
+	pageRoutes: ['/', '/demo'],
+	apiRoutes: ['/api/demo']
 })
 const prodEntries = filterEntriesForRouteChannel(inventory.routes, policy, 'prod')
 ```
@@ -146,20 +146,20 @@ generated root into its build/deployment process.
 
 ```ts
 import {
-  checkSvelteKitRouteChannelPolicy,
-  generateSvelteKitRouteChannel
+	checkSvelteKitRouteChannelPolicy,
+	generateSvelteKitRouteChannel
 } from '@goobits/sitemap/sveltekit'
 
 const issues = await checkSvelteKitRouteChannelPolicy({ sourceRoutesRoot, policy })
 if (issues.missing.length || issues.invalid.length || issues.stale.length) {
-  throw new Error(`Invalid route-channel policy: ${JSON.stringify(issues)}`)
+	throw new Error(`Invalid route-channel policy: ${JSON.stringify(issues)}`)
 }
 
 await generateSvelteKitRouteChannel({
-  sourceRoutesRoot,
-  generatedRoutesRoot,
-  channel: 'prod',
-  policy
+	sourceRoutesRoot,
+	generatedRoutesRoot,
+	channel: 'prod',
+	policy
 })
 ```
 
@@ -169,22 +169,27 @@ await generateSvelteKitRouteChannel({
 
 ```ts
 // src/routes/sitemap.xml/+server.ts
-import { buildSitemapXml, resolveSiteOrigin, getBaseUrl, getPlatformEnv } from '@goobits/sitemap/server'
+import {
+	buildSitemapXml,
+	resolveSiteOrigin,
+	getBaseUrl,
+	getPlatformEnv
+} from '@goobits/sitemap/server'
 
 export const GET = async ({ url, platform }) => {
-  const origin = resolveSiteOrigin({
-    baseUrl: getBaseUrl(getPlatformEnv(platform)),
-    requestUrl: url,
-    fallbackOrigin: 'https://example.com'
-  })
+	const origin = resolveSiteOrigin({
+		baseUrl: getBaseUrl(getPlatformEnv(platform)),
+		requestUrl: url,
+		fallbackOrigin: 'https://example.com'
+	})
 
-  const routes = await collectPublicRoutes()   // your host code
+	const routes = await collectPublicRoutes() // your host code
 
-  const xml = buildSitemapXml(origin, routes)
+	const xml = buildSitemapXml(origin, routes)
 
-  return new Response(xml, {
-    headers: { 'content-type': 'application/xml; charset=utf-8' }
-  })
+	return new Response(xml, {
+		headers: { 'content-type': 'application/xml; charset=utf-8' }
+	})
 }
 ```
 
@@ -196,13 +201,13 @@ When a single sitemap would exceed the 50k-URL / 50MB protocol cap, shard your U
 import { buildSitemapIndexXml, toAbsoluteUrl } from '@goobits/sitemap/server'
 
 const shards = [
-  { path: '/sitemap-pages.xml', lastModified: '2026-05-20T00:00:00Z' },
-  { path: '/sitemap-users.xml', lastModified: '2026-05-20T12:00:00Z' },
-  { path: '/sitemap-posts.xml', lastModified: '2026-05-20T12:30:00Z' }
+	{ path: '/sitemap-pages.xml', lastModified: '2026-05-20T00:00:00Z' },
+	{ path: '/sitemap-users.xml', lastModified: '2026-05-20T12:00:00Z' },
+	{ path: '/sitemap-posts.xml', lastModified: '2026-05-20T12:30:00Z' }
 ]
 
 const indexXml = buildSitemapIndexXml(
-  shards.map((s) => ({ loc: toAbsoluteUrl(origin, s.path), lastModified: s.lastModified }))
+	shards.map((s) => ({ loc: toAbsoluteUrl(origin, s.path), lastModified: s.lastModified }))
 )
 ```
 
@@ -210,25 +215,22 @@ const indexXml = buildSitemapIndexXml(
 
 ```ts
 import {
-  getFilteredSitemapGroups,
-  getFilteredSitemapCount,
-  getSitemapAudiencesForVisibility,
-  getSitemapAvailableTags,
-  type RouteInventory,
-  type HumanSitemapVisibility
+	getFilteredSitemapGroups,
+	getFilteredSitemapCount,
+	getSitemapAudiencesForVisibility,
+	getSitemapAvailableTags,
+	type RouteInventory,
+	type HumanSitemapVisibility
 } from '@goobits/sitemap/core'
 
-const inventory: RouteInventory = await scanRoutes()   // your host code
+const inventory: RouteInventory = await scanRoutes() // your host code
 const visibility: HumanSitemapVisibility = canSeeInternal ? 'internal' : 'public'
 
 const audiences = getSitemapAudiencesForVisibility(visibility)
 const visibleGrouped = Object.fromEntries(
-  Object.entries(inventory.grouped)
-    .map(([category, entries]) => [
-      category,
-      entries.filter((e) => audiences.includes(e.sitemap))
-    ])
-    .filter(([, entries]) => entries.length > 0)
+	Object.entries(inventory.grouped)
+		.map(([category, entries]) => [category, entries.filter((e) => audiences.includes(e.sitemap))])
+		.filter(([, entries]) => entries.length > 0)
 )
 
 const filtered = getFilteredSitemapGroups(visibleGrouped, query, selectedTags, 'path')
@@ -242,22 +244,22 @@ const availableTags = getSitemapAvailableTags(canSeeInternal)
 import { pingSearchEngines } from '@goobits/sitemap/ops'
 
 const results = await pingSearchEngines('https://example.com/sitemap.xml', {
-  engines: [
-    // Modern: IndexNow (Bing, Yandex, others)
-    { name: 'IndexNow', baseUrl: 'https://api.indexnow.org/indexnow?url=' }
-    // Historical Bing endpoint (kept around but increasingly unreliable):
-    // ...HISTORICAL_PING_ENDPOINTS
-  ],
-  timeoutMs: 8000,
-  retry: { retries: 1, delayMs: 200 }
+	engines: [
+		// Modern: IndexNow (Bing, Yandex, others)
+		{ name: 'IndexNow', baseUrl: 'https://api.indexnow.org/indexnow?url=' }
+		// Historical Bing endpoint (kept around but increasingly unreliable):
+		// ...HISTORICAL_PING_ENDPOINTS
+	],
+	timeoutMs: 8000,
+	retry: { retries: 1, delayMs: 200 }
 })
 
 for (const result of results) {
-  if (!result.success) console.warn(`Ping to ${result.engine} failed:`, result.error)
+	if (!result.success) console.warn(`Ping to ${result.engine} failed:`, result.error)
 }
 ```
 
-ℹ️ **A note on search-engine ping endpoints.** Google retired its public sitemap ping in 2023; Bing has signaled its endpoint may follow. The package ships *no* default engine list. You opt into the targets you actually want to notify. `HISTORICAL_PING_ENDPOINTS` is exported as a reference, not a default.
+ℹ️ **A note on search-engine ping endpoints.** Google retired its public sitemap ping in 2023; Bing has signaled its endpoint may follow. The package ships _no_ default engine list. You opt into the targets you actually want to notify. `HISTORICAL_PING_ENDPOINTS` is exported as a reference, not a default.
 
 ## URL HEAD validation
 
@@ -266,16 +268,16 @@ For periodic smoke-testing of your live sitemap (e.g., from a cron job after eac
 ```ts
 import { validateSitemapUrls } from '@goobits/sitemap/ops'
 
-const sample = pickRandomUrls(allSitemapUrls, 100)   // your host code
+const sample = pickRandomUrls(allSitemapUrls, 100) // your host code
 const { valid, invalid, errors } = await validateSitemapUrls(sample, {
-  concurrency: 8,
-  timeoutMs: 4000,
-  maxErrors: 20
+	concurrency: 8,
+	timeoutMs: 4000,
+	maxErrors: 20
 })
 
 if (invalid > 0) {
-  console.warn(`Sitemap has ${invalid} broken URLs (of ${valid + invalid} checked):`)
-  errors.forEach((e) => console.warn(`  ${e}`))
+	console.warn(`Sitemap has ${invalid} broken URLs (of ${valid + invalid} checked):`)
+	errors.forEach((e) => console.warn(`  ${e}`))
 }
 ```
 
@@ -293,19 +295,19 @@ import type { PageServerLoad } from './$types'
 export const prerender = true
 
 export const load: PageServerLoad = async () => {
-  const inventory = getPublicRouteInventory()   // your host code
-  return {
-    grouped: inventory.grouped,
-    stats: inventory.stats
-  }
+	const inventory = getPublicRouteInventory() // your host code
+	return {
+		grouped: inventory.grouped,
+		stats: inventory.stats
+	}
 }
 ```
 
 ```svelte
 <!-- src/routes/sitemap/+page.svelte -->
 <script lang="ts">
-  import { SitemapPage } from '@goobits/sitemap/ui'
-  let { data } = $props()
+	import { SitemapPage } from '@goobits/sitemap/ui'
+	let { data } = $props()
 </script>
 
 <SitemapPage {data} eyebrow="Sitemap" title="A map of" titleAccent="everything here" />
@@ -319,51 +321,51 @@ Set any `--gb-sitemap-*` custom property on `:root`, a wrapping element via `:gl
 
 ```css
 :root {
-  --gb-sitemap-accent: #6f5af0;
-  --gb-sitemap-bg: #faf8f3;
-  --gb-sitemap-card-bg: #fff;
-  --gb-sitemap-radius: 0.75rem;
+	--gb-sitemap-accent: #6f5af0;
+	--gb-sitemap-bg: #faf8f3;
+	--gb-sitemap-card-bg: #fff;
+	--gb-sitemap-radius: 0.75rem;
 }
 ```
 
 Full variable list:
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `--gb-sitemap-bg` | `transparent` | Page background + chip backgrounds |
-| `--gb-sitemap-card-bg` | `rgba(0,0,0,0.025)` | Toolbar + group card backgrounds |
-| `--gb-sitemap-card-bg-strong` | `color-mix(currentColor 6% / transparent)` | Active sort button background |
-| `--gb-sitemap-text` | `currentColor` | Primary text |
-| `--gb-sitemap-muted` | `color-mix(currentColor 55% / transparent)` | Secondary text (path, dates, badges) |
-| `--gb-sitemap-accent` | `currentColor` | Title accent, active chip, link hover, signal dot |
-| `--gb-sitemap-accent-dim` | derived from `--gb-sitemap-accent` (70%) | Eyebrow, chip hover border |
-| `--gb-sitemap-secondary` | `color-mix(currentColor 70% / transparent)` | Secondary-tone category accent, Auth/Internal tag color |
-| `--gb-sitemap-border` | `color-mix(currentColor 12% / transparent)` | All hairline borders |
-| `--gb-sitemap-radius` | `0.625rem` | All rounded corners (scaled for sub-elements) |
-| `--gb-sitemap-font` | `inherit` | Font family for the page |
-| `--gb-sitemap-font-mono` | `ui-monospace, ...` | Font family for paths + dates |
-| `--gb-sitemap-spacing` | `1rem` | Vertical rhythm multiplier |
+| Variable                      | Default                                     | Purpose                                                 |
+| ----------------------------- | ------------------------------------------- | ------------------------------------------------------- |
+| `--gb-sitemap-bg`             | `transparent`                               | Page background + chip backgrounds                      |
+| `--gb-sitemap-card-bg`        | `rgba(0,0,0,0.025)`                         | Toolbar + group card backgrounds                        |
+| `--gb-sitemap-card-bg-strong` | `color-mix(currentColor 6% / transparent)`  | Active sort button background                           |
+| `--gb-sitemap-text`           | `currentColor`                              | Primary text                                            |
+| `--gb-sitemap-muted`          | `color-mix(currentColor 55% / transparent)` | Secondary text (path, dates, badges)                    |
+| `--gb-sitemap-accent`         | `currentColor`                              | Title accent, active chip, link hover, signal dot       |
+| `--gb-sitemap-accent-dim`     | derived from `--gb-sitemap-accent` (70%)    | Eyebrow, chip hover border                              |
+| `--gb-sitemap-secondary`      | `color-mix(currentColor 70% / transparent)` | Secondary-tone category accent, Auth/Internal tag color |
+| `--gb-sitemap-border`         | `color-mix(currentColor 12% / transparent)` | All hairline borders                                    |
+| `--gb-sitemap-radius`         | `0.625rem`                                  | All rounded corners (scaled for sub-elements)           |
+| `--gb-sitemap-font`           | `inherit`                                   | Font family for the page                                |
+| `--gb-sitemap-font-mono`      | `ui-monospace, ...`                         | Font family for paths + dates                           |
+| `--gb-sitemap-spacing`        | `1rem`                                      | Vertical rhythm multiplier                              |
 
 ### Per-category icons + tones
 
 ```svelte
 <script lang="ts">
-  import { Compass, Sparkles } from '@lucide/svelte'
-  import { SitemapPage, type CategoryMeta } from '@goobits/sitemap/ui'
-  let { data } = $props()
+	import { Compass, Sparkles } from '@lucide/svelte'
+	import { SitemapPage, type CategoryMeta } from '@goobits/sitemap/ui'
+	let { data } = $props()
 
-  const categoryMeta: Record<string, CategoryMeta> = {
-    Main: { tone: 'primary' },
-    Beta: { tone: 'secondary' }
-  }
+	const categoryMeta: Record<string, CategoryMeta> = {
+		Main: { tone: 'primary' },
+		Beta: { tone: 'secondary' }
+	}
 </script>
 
 <SitemapPage {data} {categoryMeta} categoryOrder={['Main', 'Beta']}>
-  {#snippet categoryHead(category)}
-    {#if category === 'Main'}<Compass size={18} />
-    {:else if category === 'Beta'}<Sparkles size={18} />
-    {/if}
-  {/snippet}
+	{#snippet categoryHead(category)}
+		{#if category === 'Main'}<Compass size={18} />
+		{:else if category === 'Beta'}<Sparkles size={18} />
+		{/if}
+	{/snippet}
 </SitemapPage>
 ```
 
@@ -373,19 +375,19 @@ Full variable list:
 
 ```svelte
 <SitemapPage {data}>
-  {#snippet hero({ stats })}
-    <div class="my-hero">
-      <h1>Everything we have</h1>
-      <p>{stats.total} routes</p>
-    </div>
-  {/snippet}
-  {#snippet empty()}
-    <p>No matches. Try clearing your filters?</p>
-  {/snippet}
+	{#snippet hero({ stats })}
+		<div class="my-hero">
+			<h1>Everything we have</h1>
+			<p>{stats.total} routes</p>
+		</div>
+	{/snippet}
+	{#snippet empty()}
+		<p>No matches. Try clearing your filters?</p>
+	{/snippet}
 </SitemapPage>
 ```
 
-The component pulls Svelte as an *optional* peer, so consumers using only `/core`, `/server`, or `/ops` don't bundle it.
+The component pulls Svelte as an _optional_ peer, so consumers using only `/core`, `/server`, or `/ops` don't bundle it.
 
 ## Drop-in SvelteKit endpoints
 
@@ -399,8 +401,8 @@ import { getPublicRouteInventory, FALLBACK_ORIGIN } from '$lib/server/sitemap-ro
 export const prerender = false
 
 export const GET = createSitemapXmlHandler({
-  fallbackOrigin: FALLBACK_ORIGIN,
-  getRoutes: () => getPublicRouteInventory().routes
+	fallbackOrigin: FALLBACK_ORIGIN,
+	getRoutes: () => getPublicRouteInventory().routes
 })
 ```
 
@@ -410,9 +412,9 @@ import { createRobotsTxtHandler } from '@goobits/sitemap/sveltekit'
 import { FALLBACK_ORIGIN } from '$lib/server/sitemap-routes'
 
 export const GET = createRobotsTxtHandler({
-  fallbackOrigin: FALLBACK_ORIGIN,
-  // Optional:
-  // extraLines: ['Disallow: /admin/']
+	fallbackOrigin: FALLBACK_ORIGIN
+	// Optional:
+	// extraLines: ['Disallow: /admin/']
 })
 ```
 
@@ -431,24 +433,24 @@ const pageGlob = import.meta.glob('/src/routes/**' + '/+page.svelte')
 const serverGlob = import.meta.glob('/src/routes/**' + '/+page.server.{ts,js}')
 
 const ENTRIES = scanSvelteKitRoutes(pageGlob, {
-  serverGlob,
-  category: (path) => {
-    if (path.startsWith('/blog') || path.startsWith('/docs')) return 'Content'
-    if (path.startsWith('/shop')) return 'Shop'
-    if (path === '/sign-in' || path === '/sign-up') return 'Account'
-    return 'Main'
-  },
-  exclude: (path, raw) =>
-    raw.includes('(protected)') ||
-    raw.includes('local-only') ||
-    path === '/sitemap' ||
-    path.includes('thank-you') ||
-    /\[token\]|\[email\]/.test(raw),
-  lastModified: () => '2026-05-21T00:00:00Z'   // or query git/content store
+	serverGlob,
+	category: (path) => {
+		if (path.startsWith('/blog') || path.startsWith('/docs')) return 'Content'
+		if (path.startsWith('/shop')) return 'Shop'
+		if (path === '/sign-in' || path === '/sign-up') return 'Account'
+		return 'Main'
+	},
+	exclude: (path, raw) =>
+		raw.includes('(protected)') ||
+		raw.includes('local-only') ||
+		path === '/sitemap' ||
+		path.includes('thank-you') ||
+		/\[token\]|\[email\]/.test(raw),
+	lastModified: () => '2026-05-21T00:00:00Z' // or query git/content store
 })
 
 export function getPublicRouteInventory() {
-  return createRouteInventory(ENTRIES)
+	return createRouteInventory(ENTRIES)
 }
 ```
 
@@ -462,12 +464,12 @@ If your routes don't fit the auto-scan pattern (e.g., they come from a CMS), the
 import { createPageEntry, createRouteInventory } from '@goobits/sitemap/core'
 
 const ENTRIES = [
-  createPageEntry('/', 'Home', 'Main', '2026-05-21T00:00:00Z', { hasServerLoad: true }),
-  createPageEntry('/about', 'About', 'Main', '2026-05-21T00:00:00Z')
+	createPageEntry('/', 'Home', 'Main', '2026-05-21T00:00:00Z', { hasServerLoad: true }),
+	createPageEntry('/about', 'About', 'Main', '2026-05-21T00:00:00Z')
 ]
 
 export function getPublicRouteInventory() {
-  return createRouteInventory(ENTRIES)
+	return createRouteInventory(ENTRIES)
 }
 ```
 
@@ -475,22 +477,22 @@ export function getPublicRouteInventory() {
 
 ## Entrypoints
 
-| Subpath | What's exported |
-|---|---|
-| `@goobits/sitemap` | Barrel: re-exports `core` + `server` (NOT `ops`, `sveltekit`, or `ui`) |
-| `@goobits/sitemap/core` | Types + filter/sort/visibility helpers + inventory builders + route-channel policy validation/filtering. Runtime-agnostic. |
-| `@goobits/sitemap/server` | XML builders + origin resolution. Pure, no network. |
-| `@goobits/sitemap/ops` | `pingSearchEngines` + `validateSitemapUrls`. Server-side, `fetch`-dependent. |
-| `@goobits/sitemap/sveltekit` | Endpoint factories, route scanning, and route-channel policy checking/generation. Requires `@sveltejs/kit ^2`. |
-| `@goobits/sitemap/ui` | `<SitemapPage>` themable Svelte 5 component. Requires `svelte ^5`. |
+| Subpath                      | What's exported                                                                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `@goobits/sitemap`           | Barrel: re-exports `core` + `server` (NOT `ops`, `sveltekit`, or `ui`)                                                     |
+| `@goobits/sitemap/core`      | Types + filter/sort/visibility helpers + inventory builders + route-channel policy validation/filtering. Runtime-agnostic. |
+| `@goobits/sitemap/server`    | XML builders + origin resolution. Pure, no network.                                                                        |
+| `@goobits/sitemap/ops`       | `pingSearchEngines` + `validateSitemapUrls`. Server-side, `fetch`-dependent.                                               |
+| `@goobits/sitemap/sveltekit` | Endpoint factories, route scanning, and route-channel policy checking/generation. Requires `@sveltejs/kit ^2`.             |
+| `@goobits/sitemap/ui`        | `<SitemapPage>` themable Svelte 5 component. Requires `svelte ^5`.                                                         |
 
 ## Per-module runtime compatibility
 
-| Module | Node ≥22 | Bun | Deno | Cloudflare Workers |
-|---|---|---|---|---|
-| `core` | ✅ | ✅ | ✅ | ✅ |
-| `server` | ✅ | ✅ | ✅ | ✅ |
-| `ops` | ✅ | ✅ | ✅ | ✅ (uses global `fetch`) |
+| Module                       | Node ≥22        | Bun           | Deno          | Cloudflare Workers             |
+| ---------------------------- | --------------- | ------------- | ------------- | ------------------------------ |
+| `core`                       | ✅              | ✅            | ✅            | ✅                             |
+| `server`                     | ✅              | ✅            | ✅            | ✅                             |
+| `ops`                        | ✅              | ✅            | ✅            | ✅ (uses global `fetch`)       |
 | `sveltekit` route generation | ✅ (build time) | not certified | not certified | ❌ (build-time filesystem API) |
 
 `core`, `server`, and `ops` import no Node-only built-ins. The route-channel

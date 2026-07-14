@@ -8,12 +8,7 @@
 
 import type { RequestHandler } from '@sveltejs/kit'
 import type { SitemapRoute } from '../core/types.ts'
-import {
-	buildSitemapXml,
-	getBaseUrl,
-	getPlatformEnv,
-	resolveSiteOrigin
-} from '../server/xml.ts'
+import { buildSitemapXml, getBaseUrl, getPlatformEnv, resolveSiteOrigin } from '../server/xml.ts'
 
 /** Options for `createSitemapXmlHandler`. */
 export interface SitemapXmlHandlerOptions {
@@ -115,7 +110,7 @@ export function createRobotsTxtHandler(options: RobotsTxtHandlerOptions): Reques
 			'Allow: /',
 			...extraLines,
 			'',
-			`Sitemap: ${ origin }${ sitemapPath }`,
+			`Sitemap: ${origin}${sitemapPath}`,
 			''
 		]
 

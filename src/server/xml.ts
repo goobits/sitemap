@@ -127,14 +127,14 @@ export function escapeXml(value: string) {
  * directory URLs); preserves file extensions and the bare root.
  */
 export function toAbsoluteUrl(origin: string, path: string) {
-	const normalizedPath = path.startsWith('/') ? path : `/${ path }`
+	const normalizedPath = path.startsWith('/') ? path : `/${path}`
 	const lastSegment = normalizedPath.split('/').pop() ?? ''
 	const hasFileExtension = /\.[a-z0-9]+$/i.test(lastSegment)
 	const canonicalPath =
 		normalizedPath === '/' || hasFileExtension || normalizedPath.endsWith('/')
 			? normalizedPath
-			: `${ normalizedPath }/`
-	return `${ trimTrailingSlash(origin) }${ canonicalPath }`
+			: `${normalizedPath}/`
+	return `${trimTrailingSlash(origin)}${canonicalPath}`
 }
 
 function clampPriority(value: number | undefined): string | undefined {
@@ -154,20 +154,20 @@ function clampPriority(value: number | undefined): string | undefined {
  * they're part of the sitemaps.org spec and harmless to include.
  */
 export function buildSitemapXml(origin: string, routes: SitemapRoute[]) {
-	const urlEntries = routes.map((route) => {
-		const loc = escapeXml(toAbsoluteUrl(origin, route.path))
-		const lastMod = escapeXml(formatSitemapLastMod(route.lastModified))
-		const changefreqPart = route.changefreq
-			? `<changefreq>${ escapeXml(route.changefreq) }</changefreq>`
-			: ''
-		const priorityValue = clampPriority(route.priority)
-		const priorityPart = priorityValue
-			? `<priority>${ priorityValue }</priority>`
-			: ''
-		return `<url><loc>${ loc }</loc><lastmod>${ lastMod }</lastmod>${ changefreqPart }${ priorityPart }</url>`
-	}).join('')
+	const urlEntries = routes
+		.map((route) => {
+			const loc = escapeXml(toAbsoluteUrl(origin, route.path))
+			const lastMod = escapeXml(formatSitemapLastMod(route.lastModified))
+			const changefreqPart = route.changefreq
+				? `<changefreq>${escapeXml(route.changefreq)}</changefreq>`
+				: ''
+			const priorityValue = clampPriority(route.priority)
+			const priorityPart = priorityValue ? `<priority>${priorityValue}</priority>` : ''
+			return `<url><loc>${loc}</loc><lastmod>${lastMod}</lastmod>${changefreqPart}${priorityPart}</url>`
+		})
+		.join('')
 
-	return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${ urlEntries }</urlset>`
+	return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urlEntries}</urlset>`
 }
 
 /**
@@ -186,13 +186,15 @@ export type SitemapIndexEntry = {
  * first if you have only paths).
  */
 export function buildSitemapIndexXml(entries: SitemapIndexEntry[]) {
-	const sitemapEntries = entries.map((entry) => {
-		const loc = escapeXml(entry.loc)
-		const lastModPart = entry.lastModified
-			? `<lastmod>${ escapeXml(formatSitemapLastMod(entry.lastModified)) }</lastmod>`
-			: ''
-		return `<sitemap><loc>${ loc }</loc>${ lastModPart }</sitemap>`
-	}).join('')
+	const sitemapEntries = entries
+		.map((entry) => {
+			const loc = escapeXml(entry.loc)
+			const lastModPart = entry.lastModified
+				? `<lastmod>${escapeXml(formatSitemapLastMod(entry.lastModified))}</lastmod>`
+				: ''
+			return `<sitemap><loc>${loc}</loc>${lastModPart}</sitemap>`
+		})
+		.join('')
 
-	return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${ sitemapEntries }</sitemapindex>`
+	return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapEntries}</sitemapindex>`
 }

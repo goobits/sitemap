@@ -19,7 +19,10 @@ afterEach(() => {
 	else delete process.env['PUBLIC_BASE_URL']
 })
 
-function mkEvent(reqUrl = 'http://localhost:3000/sitemap.xml', platformEnv?: Record<string, string>) {
+function mkEvent(
+	reqUrl = 'http://localhost:3000/sitemap.xml',
+	platformEnv?: Record<string, string>
+) {
 	return {
 		url: new URL(reqUrl),
 		platform: platformEnv ? { env: platformEnv } : undefined
@@ -66,7 +69,7 @@ describe('createSitemapXmlHandler', () => {
 	it('awaits async getRoutes', async () => {
 		const handler = createSitemapXmlHandler({
 			fallbackOrigin: 'https://example.com',
-			getRoutes: async () => [ { path: '/async', lastModified: '2026-05-21T00:00:00Z' } ]
+			getRoutes: async () => [{ path: '/async', lastModified: '2026-05-21T00:00:00Z' }]
 		})
 		const body = await (await handler(mkEvent())).text()
 		expect(body).toContain('/async/')
@@ -75,11 +78,15 @@ describe('createSitemapXmlHandler', () => {
 	it('prefers PUBLIC_BASE_URL from platform env over the fallback', async () => {
 		const handler = createSitemapXmlHandler({
 			fallbackOrigin: 'https://fallback.example.com',
-			getRoutes: () => [ { path: '/x', lastModified: '2026-01-01T00:00:00Z' } ]
+			getRoutes: () => [{ path: '/x', lastModified: '2026-01-01T00:00:00Z' }]
 		})
-		const body = await (await handler(mkEvent('http://localhost:3000/sitemap.xml', {
-			PUBLIC_BASE_URL: 'https://prod.example.com'
-		}))).text()
+		const body = await (
+			await handler(
+				mkEvent('http://localhost:3000/sitemap.xml', {
+					PUBLIC_BASE_URL: 'https://prod.example.com'
+				})
+			)
+		).text()
 		expect(body).toContain('https://prod.example.com/x/')
 		expect(body).not.toContain('fallback.example.com')
 	})
@@ -111,7 +118,7 @@ describe('createRobotsTxtHandler', () => {
 	it('inserts extraLines between Allow and Sitemap', async () => {
 		const handler = createRobotsTxtHandler({
 			fallbackOrigin: 'https://example.com',
-			extraLines: [ 'Disallow: /admin/', 'Disallow: /api/internal/' ]
+			extraLines: ['Disallow: /admin/', 'Disallow: /api/internal/']
 		})
 		const body = await (await handler(mkEvent('http://localhost:3000/robots.txt'))).text()
 		const lines = body.split('\n')
@@ -119,7 +126,9 @@ describe('createRobotsTxtHandler', () => {
 		expect(lines).toContain('Disallow: /api/internal/')
 		// Ordering: Allow comes before Disallow, which comes before Sitemap
 		expect(lines.indexOf('Allow: /')).toBeLessThan(lines.indexOf('Disallow: /admin/'))
-		expect(lines.indexOf('Disallow: /admin/')).toBeLessThan(lines.findIndex((l) => l.startsWith('Sitemap:')))
+		expect(lines.indexOf('Disallow: /admin/')).toBeLessThan(
+			lines.findIndex((l) => l.startsWith('Sitemap:'))
+		)
 	})
 
 	it('default cache-control', async () => {

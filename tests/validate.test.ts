@@ -15,8 +15,14 @@ describe('validateSitemapUrls', () => {
 	})
 
 	it('counts all-valid URLs', async () => {
-		globalThis.fetch = vi.fn(async () => new Response('', { status: 200 })) as unknown as typeof fetch
-		const promise = validateSitemapUrls([ 'https://x.test/a', 'https://x.test/b', 'https://x.test/c' ])
+		globalThis.fetch = vi.fn(
+			async () => new Response('', { status: 200 })
+		) as unknown as typeof fetch
+		const promise = validateSitemapUrls([
+			'https://x.test/a',
+			'https://x.test/b',
+			'https://x.test/c'
+		])
 		await vi.runAllTimersAsync()
 		const result = await promise
 		expect(result.valid).toBe(3)
@@ -55,15 +61,17 @@ describe('validateSitemapUrls', () => {
 			return new Response('', { status: 200 })
 		}) as unknown as typeof fetch
 
-		const promise = validateSitemapUrls([ 'https://x.test/a' ])
+		const promise = validateSitemapUrls(['https://x.test/a'])
 		await vi.runAllTimersAsync()
 		await promise
-		expect(methods).toEqual([ 'HEAD' ])
+		expect(methods).toEqual(['HEAD'])
 	})
 
 	it('bounds errors[] by maxErrors but still counts all invalid', async () => {
-		globalThis.fetch = vi.fn(async () => new Response('', { status: 500 })) as unknown as typeof fetch
-		const urls = Array.from({ length: 25 }, (_, i) => `https://x.test/p${ i }`)
+		globalThis.fetch = vi.fn(
+			async () => new Response('', { status: 500 })
+		) as unknown as typeof fetch
+		const urls = Array.from({ length: 25 }, (_, i) => `https://x.test/p${i}`)
 		const promise = validateSitemapUrls(urls, { maxErrors: 5 })
 		await vi.runAllTimersAsync()
 		const result = await promise
@@ -82,7 +90,7 @@ describe('validateSitemapUrls', () => {
 			return new Response('', { status: 200 })
 		}) as unknown as typeof fetch
 
-		const urls = Array.from({ length: 12 }, (_, i) => `https://x.test/${ i }`)
+		const urls = Array.from({ length: 12 }, (_, i) => `https://x.test/${i}`)
 		const promise = validateSitemapUrls(urls, { concurrency: 3 })
 		await vi.runAllTimersAsync()
 		await promise
@@ -103,8 +111,10 @@ describe('validateSitemapUrls', () => {
 		const warn = vi.fn()
 		const info = vi.fn()
 
-		globalThis.fetch = vi.fn(async () => new Response('', { status: 200 })) as unknown as typeof fetch
-		let promise = validateSitemapUrls([ 'https://x.test/a' ], { logger: { info, warn } })
+		globalThis.fetch = vi.fn(
+			async () => new Response('', { status: 200 })
+		) as unknown as typeof fetch
+		let promise = validateSitemapUrls(['https://x.test/a'], { logger: { info, warn } })
 		await vi.runAllTimersAsync()
 		await promise
 		expect(info).toHaveBeenCalledOnce()
@@ -112,8 +122,10 @@ describe('validateSitemapUrls', () => {
 
 		info.mockReset()
 		warn.mockReset()
-		globalThis.fetch = vi.fn(async () => new Response('', { status: 404 })) as unknown as typeof fetch
-		promise = validateSitemapUrls([ 'https://x.test/b' ], { logger: { info, warn } })
+		globalThis.fetch = vi.fn(
+			async () => new Response('', { status: 404 })
+		) as unknown as typeof fetch
+		promise = validateSitemapUrls(['https://x.test/b'], { logger: { info, warn } })
 		await vi.runAllTimersAsync()
 		await promise
 		expect(warn).toHaveBeenCalledOnce()

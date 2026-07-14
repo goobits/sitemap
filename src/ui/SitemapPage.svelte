@@ -130,14 +130,16 @@ preprocessor, no `@goobits/ui` dependency.
 	const visibleGrouped = $derived.by(() => {
 		if (canViewInternalRoutes && visibility === 'internal') return data.grouped
 		const out: Record<string, SitemapEntry[]> = {}
-		for (const [ category, entries ] of Object.entries(data.grouped)) {
+		for (const [category, entries] of Object.entries(data.grouped)) {
 			const filtered = entries.filter((e) => e.sitemap === 'public')
 			if (filtered.length > 0) out[category] = filtered
 		}
 		return out
 	})
 
-	const filteredGrouped = $derived(getFilteredSitemapGroups(visibleGrouped, query, selectedTags, sortBy))
+	const filteredGrouped = $derived(
+		getFilteredSitemapGroups(visibleGrouped, query, selectedTags, sortBy)
+	)
 	const filteredCount = $derived(getFilteredSitemapCount(filteredGrouped))
 	const totalCount = $derived(data.stats.total)
 	const availableTags = $derived(getSitemapAvailableTags(canViewInternalRoutes))
@@ -146,10 +148,10 @@ preprocessor, no `@goobits/ui` dependency.
 		const unknown = Object.keys(filteredGrouped)
 			.filter((cat) => !categoryOrder.includes(cat))
 			.sort((a, b) => a.localeCompare(b))
-		return [ ...known, ...unknown ].map((cat) => [ cat, filteredGrouped[cat]! ] as const)
+		return [...known, ...unknown].map((cat) => [cat, filteredGrouped[cat]!] as const)
 	})
 	const resolvedSubtitle = $derived(
-		subtitle ?? `${ totalCount } public ${ totalCount === 1 ? 'page' : 'pages' }.`
+		subtitle ?? `${totalCount} public ${totalCount === 1 ? 'page' : 'pages'}.`
 	)
 
 	function toggle(category: string) {
@@ -162,7 +164,7 @@ preprocessor, no `@goobits/ui` dependency.
 
 	function toggleTag(tag: string) {
 		const idx = selectedTags.indexOf(tag)
-		if (idx === -1) selectedTags = [ ...selectedTags, tag ]
+		if (idx === -1) selectedTags = [...selectedTags, tag]
 		else selectedTags = selectedTags.filter((_, i) => i !== idx)
 	}
 
@@ -176,7 +178,7 @@ preprocessor, no `@goobits/ui` dependency.
 	}
 </script>
 
-<main class={[ 'gb-sitemap', className ].filter(Boolean).join(' ')}>
+<main class={['gb-sitemap', className].filter(Boolean).join(' ')}>
 	<header class="gb-sitemap__hero">
 		{#if hero}
 			{@render hero({ stats: data.stats })}
@@ -185,7 +187,9 @@ preprocessor, no `@goobits/ui` dependency.
 				<p class="gb-sitemap__eyebrow">{eyebrow}</p>
 			{/if}
 			<h1 class="gb-sitemap__title">
-				<span>{title}</span>{#if titleAccent}<span class="gb-sitemap__title-accent">&nbsp;{titleAccent}</span>{/if}
+				<span>{title}</span>{#if titleAccent}<span class="gb-sitemap__title-accent"
+						>&nbsp;{titleAccent}</span
+					>{/if}
 			</h1>
 			<p class="gb-sitemap__subtitle">{resolvedSubtitle}</p>
 			<p class="gb-sitemap__signal">
@@ -199,7 +203,16 @@ preprocessor, no `@goobits/ui` dependency.
 		<div class="gb-sitemap__toolbar-row">
 			<label class="gb-sitemap__search">
 				<span class="gb-sitemap__visually-hidden">Search routes</span>
-				<svg class="gb-sitemap__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<svg
+					class="gb-sitemap__search-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
 					<circle cx="11" cy="11" r="7"></circle>
 					<path d="m21 21-4.3-4.3"></path>
 				</svg>
@@ -220,8 +233,8 @@ preprocessor, no `@goobits/ui` dependency.
 						class:gb-sitemap__sort-btn--active={sortBy === option.value}
 						role="radio"
 						aria-checked={sortBy === option.value}
-						onclick={() => (sortBy = option.value)}
-					>{option.label}</button>
+						onclick={() => (sortBy = option.value)}>{option.label}</button
+					>
 				{/each}
 			</div>
 
@@ -233,16 +246,16 @@ preprocessor, no `@goobits/ui` dependency.
 						class:gb-sitemap__sort-btn--active={visibility === 'public'}
 						role="radio"
 						aria-checked={visibility === 'public'}
-						onclick={() => (visibility = 'public')}
-					>Public</button>
+						onclick={() => (visibility = 'public')}>Public</button
+					>
 					<button
 						type="button"
 						class="gb-sitemap__sort-btn"
 						class:gb-sitemap__sort-btn--active={visibility === 'internal'}
 						role="radio"
 						aria-checked={visibility === 'internal'}
-						onclick={() => (visibility = 'internal')}
-					>Internal</button>
+						onclick={() => (visibility = 'internal')}>Internal</button
+					>
 				</div>
 			{/if}
 		</div>
@@ -257,8 +270,8 @@ preprocessor, no `@goobits/ui` dependency.
 							class="gb-sitemap__chip"
 							class:gb-sitemap__chip--active={selectedTags.includes(tag)}
 							aria-pressed={selectedTags.includes(tag)}
-							onclick={() => toggleTag(tag)}
-						>{tag}</button>
+							onclick={() => toggleTag(tag)}>{tag}</button
+						>
 					{/each}
 				</div>
 				<p class="gb-sitemap__count" aria-live="polite">
@@ -279,13 +292,15 @@ preprocessor, no `@goobits/ui` dependency.
 			{:else}
 				<p>No routes match your search.</p>
 				{#if query !== '' || selectedTags.length > 0}
-					<button type="button" class="gb-sitemap__clear-btn" onclick={clearFilters}>Clear filters</button>
+					<button type="button" class="gb-sitemap__clear-btn" onclick={clearFilters}
+						>Clear filters</button
+					>
 				{/if}
 			{/if}
 		</div>
 	{:else}
 		<div class="gb-sitemap__groups">
-			{#each orderedCategoryEntries as [ category, entries ] (category)}
+			{#each orderedCategoryEntries as [category, entries] (category)}
 				{@const meta = getMeta(category)}
 				{@const tone = meta.tone ?? 'primary'}
 				<section
@@ -300,7 +315,9 @@ preprocessor, no `@goobits/ui` dependency.
 						onclick={() => toggle(category)}
 					>
 						<span class="gb-sitemap__group-title">
-							{#if categoryHead}<span class="gb-sitemap__group-icon">{@render categoryHead(category)}</span>{/if}
+							{#if categoryHead}<span class="gb-sitemap__group-icon"
+									>{@render categoryHead(category)}</span
+								>{/if}
 							<span>{category}</span>
 						</span>
 						<span class="gb-sitemap__group-meta">
@@ -370,7 +387,10 @@ preprocessor, no `@goobits/ui` dependency.
 		font-weight: 600;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: var(--gb-sitemap-accent-dim, color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 70%, transparent));
+		color: var(
+			--gb-sitemap-accent-dim,
+			color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 70%, transparent)
+		);
 	}
 
 	.gb-sitemap__title {
@@ -414,7 +434,8 @@ preprocessor, no `@goobits/ui` dependency.
 		height: 0.45rem;
 		border-radius: 50%;
 		background: var(--gb-sitemap-accent, currentColor);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 25%, transparent);
+		box-shadow: 0 0 0 3px
+			color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 25%, transparent);
 	}
 
 	/* TOOLBAR */
@@ -439,7 +460,8 @@ preprocessor, no `@goobits/ui` dependency.
 	.gb-sitemap__toolbar-row--chips {
 		gap: 0.6rem;
 		padding-top: 0.5rem;
-		border-top: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
+		border-top: 1px solid
+			var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
 	}
 
 	.gb-sitemap__search {
@@ -469,12 +491,15 @@ preprocessor, no `@goobits/ui` dependency.
 		border: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
 		border-radius: calc(var(--gb-sitemap-radius, 0.625rem) * 0.75);
 		outline: none;
-		transition: border-color 0.15s, box-shadow 0.15s;
+		transition:
+			border-color 0.15s,
+			box-shadow 0.15s;
 	}
 
 	.gb-sitemap__search-input:focus {
 		border-color: var(--gb-sitemap-accent, currentColor);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 18%, transparent);
+		box-shadow: 0 0 0 3px
+			color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 18%, transparent);
 	}
 
 	.gb-sitemap__sort {
@@ -496,10 +521,14 @@ preprocessor, no `@goobits/ui` dependency.
 		border: 0;
 		border-radius: calc(var(--gb-sitemap-radius, 0.625rem) * 0.5);
 		cursor: pointer;
-		transition: color 0.15s, background-color 0.15s;
+		transition:
+			color 0.15s,
+			background-color 0.15s;
 	}
 
-	.gb-sitemap__sort-btn:hover { color: var(--gb-sitemap-text, currentColor); }
+	.gb-sitemap__sort-btn:hover {
+		color: var(--gb-sitemap-text, currentColor);
+	}
 
 	.gb-sitemap__sort-btn--active {
 		color: var(--gb-sitemap-text, currentColor);
@@ -515,11 +544,17 @@ preprocessor, no `@goobits/ui` dependency.
 		font-weight: 600;
 	}
 
-	.gb-sitemap__count--solo { margin-left: 0; }
+	.gb-sitemap__count--solo {
+		margin-left: 0;
+	}
 
 	.gb-sitemap__count-of {
 		font-weight: 400;
-		color: color-mix(in srgb, var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent)) 75%, transparent);
+		color: color-mix(
+			in srgb,
+			var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent)) 75%,
+			transparent
+		);
 	}
 
 	.gb-sitemap__filter-label {
@@ -547,12 +582,18 @@ preprocessor, no `@goobits/ui` dependency.
 		border: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
 		border-radius: 999px;
 		cursor: pointer;
-		transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+		transition:
+			color 0.15s,
+			background-color 0.15s,
+			border-color 0.15s;
 	}
 
 	.gb-sitemap__chip:hover {
 		color: var(--gb-sitemap-text, currentColor);
-		border-color: var(--gb-sitemap-accent-dim, color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 70%, transparent));
+		border-color: var(
+			--gb-sitemap-accent-dim,
+			color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 70%, transparent)
+		);
 	}
 
 	.gb-sitemap__chip--active {
@@ -578,12 +619,19 @@ preprocessor, no `@goobits/ui` dependency.
 	}
 
 	.gb-sitemap__group:hover {
-		border-color: color-mix(in srgb, var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 60%, var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent)));
+		border-color: color-mix(
+			in srgb,
+			var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 60%,
+			var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent))
+		);
 		border-left-color: var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor));
 	}
 
 	.gb-sitemap__group[data-tone='secondary'] {
-		--gb-sitemap-group-accent: var(--gb-sitemap-secondary, color-mix(in srgb, currentColor 70%, transparent));
+		--gb-sitemap-group-accent: var(
+			--gb-sitemap-secondary,
+			color-mix(in srgb, currentColor 70%, transparent)
+		);
 	}
 
 	.gb-sitemap__group[data-tone='primary'] {
@@ -607,7 +655,11 @@ preprocessor, no `@goobits/ui` dependency.
 	}
 
 	.gb-sitemap__group-header:hover {
-		background: color-mix(in srgb, var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 4%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 4%,
+			transparent
+		);
 	}
 
 	.gb-sitemap__group-title {
@@ -623,7 +675,11 @@ preprocessor, no `@goobits/ui` dependency.
 		height: 1.75rem;
 		flex-shrink: 0;
 		border-radius: calc(var(--gb-sitemap-radius, 0.625rem) * 0.6);
-		background: color-mix(in srgb, var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 18%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor)) 18%,
+			transparent
+		);
 		color: var(--gb-sitemap-group-accent, var(--gb-sitemap-accent, currentColor));
 	}
 
@@ -650,14 +706,17 @@ preprocessor, no `@goobits/ui` dependency.
 		transition: transform 0.15s ease;
 	}
 
-	.gb-sitemap__group--collapsed .gb-sitemap__chevron { transform: rotate(-90deg); }
+	.gb-sitemap__group--collapsed .gb-sitemap__chevron {
+		transform: rotate(-90deg);
+	}
 
 	/* LIST + ROWS */
 	.gb-sitemap__list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		border-top: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
+		border-top: 1px solid
+			var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
 	}
 
 	.gb-sitemap__row {
@@ -666,10 +725,13 @@ preprocessor, no `@goobits/ui` dependency.
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.7rem 1rem;
-		border-top: 1px solid var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
+		border-top: 1px solid
+			var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent));
 	}
 
-	.gb-sitemap__row:first-child { border-top: 0; }
+	.gb-sitemap__row:first-child {
+		border-top: 0;
+	}
 
 	.gb-sitemap__row-link {
 		min-width: 0;
@@ -730,15 +792,33 @@ preprocessor, no `@goobits/ui` dependency.
 
 	/* Per-tag default hues. Each can be overridden by a corresponding
 	   `--gb-sitemap-tag-*-hue` custom property on a parent element. */
-	.gb-sitemap__tag[data-tag='SSR']      { --pill-hue: var(--gb-sitemap-tag-ssr-hue, #3b82f6); }      /* blue */
-	.gb-sitemap__tag[data-tag='CSR']      { --pill-hue: var(--gb-sitemap-tag-csr-hue, #8b5cf6); }      /* violet */
-	.gb-sitemap__tag[data-tag='Dynamic']  { --pill-hue: var(--gb-sitemap-tag-dynamic-hue, #f59e0b); }  /* amber */
-	.gb-sitemap__tag[data-tag='Layout']   { --pill-hue: var(--gb-sitemap-tag-layout-hue, #14b8a6); }   /* teal */
-	.gb-sitemap__tag[data-tag='API']      { --pill-hue: var(--gb-sitemap-tag-api-hue, #64748b); }      /* slate */
-	.gb-sitemap__tag[data-tag='Auth']     { --pill-hue: var(--gb-sitemap-tag-auth-hue, #f43f5e); }     /* rose */
-	.gb-sitemap__tag[data-tag='NoIndex']  { --pill-hue: var(--gb-sitemap-tag-noindex-hue, #94a3b8); }  /* grey */
-	.gb-sitemap__tag[data-tag='Internal'] { --pill-hue: var(--gb-sitemap-tag-internal-hue, var(--gb-sitemap-accent, #5d8c7b)); }
-	.gb-sitemap__tag[data-tag='Hidden']   { --pill-hue: var(--gb-sitemap-tag-hidden-hue, #be123c); }   /* deep rose */
+	.gb-sitemap__tag[data-tag='SSR'] {
+		--pill-hue: var(--gb-sitemap-tag-ssr-hue, #3b82f6);
+	} /* blue */
+	.gb-sitemap__tag[data-tag='CSR'] {
+		--pill-hue: var(--gb-sitemap-tag-csr-hue, #8b5cf6);
+	} /* violet */
+	.gb-sitemap__tag[data-tag='Dynamic'] {
+		--pill-hue: var(--gb-sitemap-tag-dynamic-hue, #f59e0b);
+	} /* amber */
+	.gb-sitemap__tag[data-tag='Layout'] {
+		--pill-hue: var(--gb-sitemap-tag-layout-hue, #14b8a6);
+	} /* teal */
+	.gb-sitemap__tag[data-tag='API'] {
+		--pill-hue: var(--gb-sitemap-tag-api-hue, #64748b);
+	} /* slate */
+	.gb-sitemap__tag[data-tag='Auth'] {
+		--pill-hue: var(--gb-sitemap-tag-auth-hue, #f43f5e);
+	} /* rose */
+	.gb-sitemap__tag[data-tag='NoIndex'] {
+		--pill-hue: var(--gb-sitemap-tag-noindex-hue, #94a3b8);
+	} /* grey */
+	.gb-sitemap__tag[data-tag='Internal'] {
+		--pill-hue: var(--gb-sitemap-tag-internal-hue, var(--gb-sitemap-accent, #5d8c7b));
+	}
+	.gb-sitemap__tag[data-tag='Hidden'] {
+		--pill-hue: var(--gb-sitemap-tag-hidden-hue, #be123c);
+	} /* deep rose */
 
 	.gb-sitemap__row-date {
 		color: var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent));
@@ -772,7 +852,12 @@ preprocessor, no `@goobits/ui` dependency.
 		font-weight: 500;
 		color: var(--gb-sitemap-accent, currentColor);
 		background: var(--gb-sitemap-bg, transparent);
-		border: 1px solid color-mix(in srgb, var(--gb-sitemap-accent, currentColor) 35%, var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent)));
+		border: 1px solid
+			color-mix(
+				in srgb,
+				var(--gb-sitemap-accent, currentColor) 35%,
+				var(--gb-sitemap-border, color-mix(in srgb, currentColor 12%, transparent))
+			);
 		border-radius: calc(var(--gb-sitemap-radius, 0.625rem) * 0.75);
 		cursor: pointer;
 	}
@@ -796,9 +881,20 @@ preprocessor, no `@goobits/ui` dependency.
 
 	/* RESPONSIVE */
 	@media (max-width: 36rem) {
-		.gb-sitemap { padding: 1.75rem 0.75rem 3rem; }
-		.gb-sitemap__row { grid-template-columns: 1fr; gap: 0.35rem; }
-		.gb-sitemap__row-link { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
-		.gb-sitemap__count { margin-left: 0; }
+		.gb-sitemap {
+			padding: 1.75rem 0.75rem 3rem;
+		}
+		.gb-sitemap__row {
+			grid-template-columns: 1fr;
+			gap: 0.35rem;
+		}
+		.gb-sitemap__row-link {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.2rem;
+		}
+		.gb-sitemap__count {
+			margin-left: 0;
+		}
 	}
 </style>

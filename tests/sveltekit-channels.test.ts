@@ -44,14 +44,14 @@ afterEach(async () => {
 
 describe('SvelteKit route channels', () => {
 	const policy: SvelteKitRouteChannelPolicy = {
-		channels: [ 'prod', 'dev', 'wip' ],
+		channels: ['prod', 'dev', 'wip'],
 		routeTags: {
-			'/': [ 'prod', 'dev' ],
-			'/_styles': [ 'prod', 'dev' ],
-			'/demo': [ 'dev' ],
-			'/robots.txt': [ 'prod', 'dev' ]
+			'/': ['prod', 'dev'],
+			'/_styles': ['prod', 'dev'],
+			'/demo': ['dev'],
+			'/robots.txt': ['prod', 'dev']
 		},
-		copiedPrivateDirectories: [ '_styles' ]
+		copiedPrivateDirectories: ['_styles']
 	}
 
 	it('generates a channel-specific route tree with variants and route assets', async () => {
@@ -63,7 +63,7 @@ describe('SvelteKit route channels', () => {
 			policy
 		})
 
-		expect(result.includedRoutes).toEqual([ '/robots.txt' ])
+		expect(result.includedRoutes).toEqual(['/robots.txt'])
 		await expect(readFile(path.join(result.targetRoot, '+page.svelte'), 'utf8')).resolves.toBe(
 			'prod home'
 		)
@@ -76,7 +76,9 @@ describe('SvelteKit route channels', () => {
 		await expect(
 			readFile(path.join(result.targetRoot, 'robots.txt/+server.ts'), 'utf8')
 		).resolves.toBe('robots')
-		await expect(readFile(path.join(result.targetRoot, 'demo/+page.svelte'), 'utf8')).rejects.toThrow()
+		await expect(
+			readFile(path.join(result.targetRoot, 'demo/+page.svelte'), 'utf8')
+		).rejects.toThrow()
 	})
 
 	it('checks channel policy coverage against the source routes', async () => {
@@ -86,24 +88,24 @@ describe('SvelteKit route channels', () => {
 		const issues = await checkSvelteKitRouteChannelPolicy({
 			sourceRoutesRoot,
 			policy: {
-				channels: [ 'prod', 'dev' ],
+				channels: ['prod', 'dev'],
 				routeTags: {
-					'/': [ 'prod' ],
-					'/_styles': [ 'prod' ],
-					'/demo': [ 'preview' ],
-					'/old': [ 'dev' ]
+					'/': ['prod'],
+					'/_styles': ['prod'],
+					'/demo': ['preview'],
+					'/old': ['dev']
 				},
 				apiRouteTags: {
-					'/robots.txt': [ 'prod' ]
+					'/robots.txt': ['prod']
 				},
-				copiedPrivateDirectories: [ '_styles' ]
+				copiedPrivateDirectories: ['_styles']
 			}
 		})
 
 		expect(issues).toEqual({
-			missing: [ '/missing' ],
-			invalid: [ '/demo: preview' ],
-			stale: [ '/old' ]
+			missing: ['/missing'],
+			invalid: ['/demo: preview'],
+			stale: ['/old']
 		})
 	})
 })

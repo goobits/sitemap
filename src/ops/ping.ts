@@ -65,26 +65,23 @@ async function pingSearchEngine(
 	retryOptions: RetryOptions,
 	logger: PingLogger
 ): Promise<SitemapPingResult> {
-	const target = `${ engine.baseUrl }${ encodeURIComponent(sitemapUrl) }`
+	const target = `${engine.baseUrl}${encodeURIComponent(sitemapUrl)}`
 
 	try {
-		const response = await retry(
-			async () => {
-				const res = await fetchWithTimeout(target, { method: 'GET' }, timeoutMs)
-				if (!res.ok && res.status >= 500) {
-					throw new Error(`HTTP ${ res.status }: ${ res.statusText }`)
-				}
-				return res
-			},
-			retryOptions
-		)
+		const response = await retry(async () => {
+			const res = await fetchWithTimeout(target, { method: 'GET' }, timeoutMs)
+			if (!res.ok && res.status >= 500) {
+				throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+			}
+			return res
+		}, retryOptions)
 
 		const result: SitemapPingResult = {
 			engine: engine.name,
 			success: response.ok,
 			status: response.status
 		}
-		if (!response.ok) result.error = `HTTP ${ response.status }: ${ response.statusText }`
+		if (!response.ok) result.error = `HTTP ${response.status}: ${response.statusText}`
 
 		if (response.ok) logger.info?.(`Sitemap ping succeeded`, { engine: engine.name })
 		else logger.warn?.(`Sitemap ping failed`, { engine: engine.name, status: response.status })
@@ -123,6 +120,8 @@ export async function pingSearchEngines(
 	if (!Array.isArray(options.engines) || options.engines.length === 0) return []
 
 	return Promise.all(
-		options.engines.map((engine) => pingSearchEngine(engine, sitemapUrl, timeoutMs, retryOptions, logger))
+		options.engines.map((engine) =>
+			pingSearchEngine(engine, sitemapUrl, timeoutMs, retryOptions, logger)
+		)
 	)
 }

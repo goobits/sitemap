@@ -43,12 +43,12 @@ describe('createPageEntry', () => {
 
 describe('createApiEntry', () => {
 	it('builds a sensible default api entry', () => {
-		const entry = createApiEntry('/api/health', 'Health', 'API', [ 'GET' ], TS)
+		const entry = createApiEntry('/api/health', 'Health', 'API', ['GET'], TS)
 		expect(entry).toEqual({
 			path: '/api/health',
 			name: 'Health',
 			type: 'api',
-			httpMethods: [ 'GET' ],
+			httpMethods: ['GET'],
 			isDynamic: false,
 			sitemap: 'public',
 			lastModified: TS,
@@ -57,13 +57,13 @@ describe('createApiEntry', () => {
 	})
 
 	it('honors overrides', () => {
-		const entry = createApiEntry('/api/users/[id]', 'User', 'API', [ 'GET', 'PATCH' ], TS, {
+		const entry = createApiEntry('/api/users/[id]', 'User', 'API', ['GET', 'PATCH'], TS, {
 			isDynamic: true,
 			sitemap: 'internal'
 		})
 		expect(entry.isDynamic).toBe(true)
 		expect(entry.sitemap).toBe('internal')
-		expect(entry.httpMethods).toEqual([ 'GET', 'PATCH' ])
+		expect(entry.httpMethods).toEqual(['GET', 'PATCH'])
 	})
 })
 
@@ -72,11 +72,11 @@ describe('groupRoutesByCategory', () => {
 		const entries = [
 			createPageEntry('/', 'Home', 'Main', TS),
 			createPageEntry('/about', 'About', 'Main', TS),
-			createApiEntry('/api/health', 'Health', 'API', [ 'GET' ], TS),
+			createApiEntry('/api/health', 'Health', 'API', ['GET'], TS),
 			createPageEntry('/contact', 'Contact', 'Main', TS)
 		]
 		const grouped = groupRoutesByCategory(entries)
-		expect(Object.keys(grouped)).toEqual([ 'Main', 'API' ])
+		expect(Object.keys(grouped)).toEqual(['Main', 'API'])
 		expect(grouped['Main']).toHaveLength(3)
 		expect(grouped['API']).toHaveLength(1)
 	})
@@ -93,8 +93,8 @@ describe('computeRouteStats', () => {
 			createPageEntry('/about', 'About', 'Main', TS),
 			createPageEntry('/account', 'Account', 'Main', TS, { hasAuth: true, hasServerLoad: true }),
 			createPageEntry('/posts/[slug]', 'Post', 'Content', TS, { isDynamic: true }),
-			createApiEntry('/api/health', 'Health', 'API', [ 'GET' ], TS),
-			createApiEntry('/api/users/[id]', 'User', 'API', [ 'GET' ], TS, { isDynamic: true })
+			createApiEntry('/api/health', 'Health', 'API', ['GET'], TS),
+			createApiEntry('/api/users/[id]', 'User', 'API', ['GET'], TS, { isDynamic: true })
 		]
 		const stats = computeRouteStats(entries)
 		expect(stats.total).toBe(6)
@@ -107,7 +107,12 @@ describe('computeRouteStats', () => {
 
 	it('returns zeros for empty input', () => {
 		expect(computeRouteStats([])).toEqual({
-			total: 0, pages: 0, api: 0, dynamic: 0, ssr: 0, protected: 0
+			total: 0,
+			pages: 0,
+			api: 0,
+			dynamic: 0,
+			ssr: 0,
+			protected: 0
 		})
 	})
 })

@@ -10,7 +10,7 @@ describe('scanSvelteKitRoutes', () => {
 			'/src/routes/blog/[slug]/+page.svelte': {}
 		})
 
-		expect(routes.map((route) => route.path)).toEqual([ '/', '/about' ])
+		expect(routes.map((route) => route.path)).toEqual(['/', '/about'])
 		expect(routes[0]).toMatchObject({
 			path: '/',
 			type: 'page',

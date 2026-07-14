@@ -23,14 +23,23 @@ function matchesQuery(query: string, values: string[]) {
 }
 
 /** Tags surfaced to anonymous viewers. */
-export const baseSitemapTags = [ 'SSR', 'CSR', 'Dynamic', 'Layout' ] as const
+export const baseSitemapTags = ['SSR', 'CSR', 'Dynamic', 'Layout'] as const
 
 /** Tags surfaced to viewers with internal-routes permission. */
-export const internalSitemapTags = [ 'SSR', 'CSR', 'Dynamic', 'Auth', 'NoIndex', 'API', 'Layout', 'Internal' ] as const
+export const internalSitemapTags = [
+	'SSR',
+	'CSR',
+	'Dynamic',
+	'Auth',
+	'NoIndex',
+	'API',
+	'Layout',
+	'Internal'
+] as const
 
 /** Returns the tag set a viewer should see based on their permission level. */
 export function getSitemapAvailableTags(canViewInternalRoutes: boolean) {
-	return canViewInternalRoutes ? [ ...internalSitemapTags ] : [ ...baseSitemapTags ]
+	return canViewInternalRoutes ? [...internalSitemapTags] : [...baseSitemapTags]
 }
 
 /** Derives the tag list for a single route entry. */
@@ -48,7 +57,7 @@ export function getRouteTags(route: SitemapEntry) {
 }
 
 function sortRoutes(routes: SitemapEntry[], sortBy: SitemapSort) {
-	return [ ...routes ].sort((a, b) => {
+	return [...routes].sort((a, b) => {
 		switch (sortBy) {
 			case 'name':
 				return localeSort(a.name, b.name)
@@ -62,7 +71,7 @@ function sortRoutes(routes: SitemapEntry[], sortBy: SitemapSort) {
 }
 
 function matchesSitemapFilters(route: SitemapEntry, query: string, selectedTags: string[]) {
-	if (!matchesQuery(query, [ route.path, route.name ])) return false
+	if (!matchesQuery(query, [route.path, route.name])) return false
 	if (selectedTags.length === 0) return true
 	const tags = getRouteTags(route)
 	return selectedTags.every((tag) => tags.includes(tag))
@@ -84,7 +93,7 @@ export function getFilteredSitemapGroups(
 	const query = normalizeQuery(searchQuery)
 	const result: Record<string, SitemapEntry[]> = {}
 
-	for (const [ category, routes ] of Object.entries(grouped)) {
+	for (const [category, routes] of Object.entries(grouped)) {
 		const filtered = routes.filter((route) => matchesSitemapFilters(route, query, selectedTags))
 		if (filtered.length > 0) {
 			result[category] = sortRoutes(filtered, sortBy)
@@ -103,6 +112,8 @@ export function getFilteredSitemapCount(grouped: Record<string, SitemapEntry[]>)
  * Returns the audience list a `HumanSitemapVisibility` choice expands to.
  * Internal viewers always see public routes too; the inverse is never true.
  */
-export function getSitemapAudiencesForVisibility(visibility: HumanSitemapVisibility): SitemapAudience[] {
-	return visibility === 'internal' ? [ 'public', 'internal' ] : [ 'public' ]
+export function getSitemapAudiencesForVisibility(
+	visibility: HumanSitemapVisibility
+): SitemapAudience[] {
+	return visibility === 'internal' ? ['public', 'internal'] : ['public']
 }

@@ -62,7 +62,10 @@ const defaultRouteFiles = new Set([
 	'+server.ts'
 ])
 
-export function getSvelteKitGeneratedRoutesRoot(generatedRoutesRoot: string, channel: string): string {
+export function getSvelteKitGeneratedRoutesRoot(
+	generatedRoutesRoot: string,
+	channel: string
+): string {
 	return path.join(generatedRoutesRoot, channel)
 }
 
@@ -71,7 +74,7 @@ export async function generateSvelteKitRouteChannel({
 	generatedRoutesRoot,
 	channel,
 	policy,
-	routeFiles = [ ...defaultRouteFiles ]
+	routeFiles = [...defaultRouteFiles]
 }: GenerateSvelteKitRouteChannelOptions): Promise<GenerateSvelteKitRouteChannelResult> {
 	const normalizedChannel = normalizeRouteChannel(policy, channel)
 	const targetRoot = getSvelteKitGeneratedRoutesRoot(generatedRoutesRoot, normalizedChannel)
@@ -112,7 +115,7 @@ export async function generateSvelteKitRouteChannel({
 	return {
 		channel: normalizedChannel,
 		targetRoot,
-		includedRoutes: [ ...includedDirectories ]
+		includedRoutes: [...includedDirectories]
 			.filter((directory) => directory !== '.')
 			.map((directory) => `/${directory.split(path.sep).join('/')}`)
 			.sort()
@@ -122,14 +125,16 @@ export async function generateSvelteKitRouteChannel({
 export async function checkSvelteKitRouteChannelPolicy({
 	sourceRoutesRoot,
 	policy,
-	routeFiles = [ ...defaultRouteFiles ]
+	routeFiles = [...defaultRouteFiles]
 }: CheckSvelteKitRouteChannelPolicyOptions): Promise<RouteChannelPolicyIssues> {
 	const routeFileSet = new Set(routeFiles)
 	const variantsDirectory = policy.variantsDirectory ?? '_variants'
 	const entries = await collectRouteEntries(sourceRoutesRoot, variantsDirectory)
 	const pageRoutes = new Set<string>()
 	const apiRoutes = new Set<string>()
-	const ignoredRouteIds = (policy.copiedPrivateDirectories ?? []).map((directory) => `/${directory}`)
+	const ignoredRouteIds = (policy.copiedPrivateDirectories ?? []).map(
+		(directory) => `/${directory}`
+	)
 
 	for (const entry of entries) {
 		if (!isRouteFile(entry.relativePath, routeFileSet)) continue
@@ -199,7 +204,9 @@ async function copyLayoutsForIncludedRoutes(
 	variantsDirectory: string,
 	channel: string
 ) {
-	const layoutFiles = entries.filter((entry) => path.basename(entry.relativePath).startsWith('+layout'))
+	const layoutFiles = entries.filter((entry) =>
+		path.basename(entry.relativePath).startsWith('+layout')
+	)
 
 	for (const directory of includedDirectories) {
 		let current = directory

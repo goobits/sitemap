@@ -20,7 +20,10 @@ export interface RouteChannelPolicyCheckOptions {
 	ignoredRouteIds?: Iterable<string>
 }
 
-export function normalizeRouteChannel(policy: RouteChannelPolicy, channel: RouteChannel): RouteChannel {
+export function normalizeRouteChannel(
+	policy: RouteChannelPolicy,
+	channel: RouteChannel
+): RouteChannel {
 	if (!policy.channels.includes(channel)) {
 		throw new Error(
 			`Unknown route channel "${channel}". Expected one of: ${policy.channels.join(', ')}.`

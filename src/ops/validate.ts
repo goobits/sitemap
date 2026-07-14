@@ -59,9 +59,9 @@ async function headCheckUrl(url: string, timeoutMs: number): Promise<SitemapUrlH
 }
 
 function formatHeadCheckError(result: SitemapUrlHeadResult): string {
-	if (result.ok) return `${ result.url }: OK`
-	if (result.error) return `${ result.url }: ${ result.error }`
-	return `${ result.url }: HTTP ${ result.status ?? 'unknown' }`
+	if (result.ok) return `${result.url}: OK`
+	if (result.error) return `${result.url}: ${result.error}`
+	return `${result.url}: HTTP ${result.status ?? 'unknown'}`
 }
 
 /**
@@ -110,7 +110,8 @@ export async function validateSitemapUrls(
 		}
 	}
 
-	if (invalid > 0) logger.warn?.(`Sitemap URL validation found broken links`, { invalid, sampled: urls.length })
+	if (invalid > 0)
+		logger.warn?.(`Sitemap URL validation found broken links`, { invalid, sampled: urls.length })
 	else logger.info?.(`Sitemap URL validation clean`, { valid, sampled: urls.length })
 
 	return { valid, invalid, errors, results }
