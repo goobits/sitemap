@@ -23,6 +23,7 @@ preprocessor, no `@goobits/ui` dependency.
 -->
 <script lang="ts">
 	import { type Snippet, untrack } from 'svelte'
+	import { Search } from '@lucide/svelte'
 	import {
 		getFilteredSitemapCount,
 		getFilteredSitemapGroups,
@@ -203,19 +204,7 @@ preprocessor, no `@goobits/ui` dependency.
 		<div class="gb-sitemap__toolbar-row">
 			<label class="gb-sitemap__search">
 				<span class="gb-sitemap__visually-hidden">Search routes</span>
-				<svg
-					class="gb-sitemap__search-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<circle cx="11" cy="11" r="7"></circle>
-					<path d="m21 21-4.3-4.3"></path>
-				</svg>
+				<span class="gb-sitemap__search-icon" aria-hidden="true"><Search size={18} /></span>
 				<input
 					class="gb-sitemap__search-input"
 					type="search"

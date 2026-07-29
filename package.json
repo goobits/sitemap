@@ -38,6 +38,9 @@
 	"engines": {
 		"node": ">=22"
 	},
+	"dependencies": {
+		"@lucide/svelte": "^0.563.1"
+	},
 	"packageManager": "pnpm@11.10.0",
 	"peerDependencies": {
 		"@sveltejs/kit": "^2.0.0",
