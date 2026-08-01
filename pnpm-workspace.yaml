@@ -1,0 +1,16 @@
+packages:
+  - '.'
+
+blockExoticSubdeps: true
+engineStrict: true
+minimumReleaseAge: 10080
+minimumReleaseAgeIgnoreMissingTime: false
+minimumReleaseAgeStrict: true
+
+allowBuilds:
+  esbuild: true
+
+overrides:
+  cookie: 0.7.2
+  postcss: 8.5.23
+  vite: 8.1.5

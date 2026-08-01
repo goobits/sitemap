@@ -8,7 +8,7 @@ Reusable sitemap core, server helpers, and operations layer for SvelteKit (and a
 
 - **Category:** library (ESM-only, TypeScript)
 - **Distribution:** git submodule consumed inside a pnpm workspace. Consumer bundlers (Vite/esbuild/SvelteKit) compile the `.ts` source directly — no build step, no `dist/`, no npm publish.
-- **Primary stack:** TypeScript 5.9 + vitest + svelte-check (for the `/ui` subpath). No runtime dependencies. Optional peer-deps: `@sveltejs/kit ^2`, `svelte ^5` (only needed for the `/ui` subpath), `typescript ^5`.
+- **Primary stack:** TypeScript 6 + vitest + svelte-check (for the `/ui` subpath). No runtime dependencies. Optional peer-deps: `@sveltejs/kit ^2`, `svelte ^5` (only needed for the `/ui` subpath), `typescript ^5 || ^6`.
 - **Runtime targets:** `core` and `server` are runtime-agnostic; `ops` needs `fetch`; SvelteKit route-channel generation is a Node build-time tool.
 - **Engines:** Node `>=22`
 
