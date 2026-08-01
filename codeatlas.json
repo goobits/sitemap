@@ -1,0 +1,10 @@
+{
+	"root": ".",
+	"projects": [
+		{
+			"id": "sitemap",
+			"root": ".",
+			"require_complete": true
+		}
+	]
+}
