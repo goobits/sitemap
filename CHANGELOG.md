@@ -13,6 +13,8 @@ All notable changes to `@goobits/sitemap` are documented here. The format adhere
 
 ### Changed
 
+- Improved the default sitemap count and tag-label contrast while preserving
+  the existing CSS custom-property theming contract.
 - Documented the Node filesystem boundary of route-tree generation separately
   from the cross-runtime core, server, and operations surfaces.
 - Declared the Vitest V8 coverage provider directly so standalone coverage

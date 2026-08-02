@@ -539,11 +539,7 @@ preprocessor, no `@goobits/ui` dependency.
 
 	.gb-sitemap__count-of {
 		font-weight: 400;
-		color: color-mix(
-			in srgb,
-			var(--gb-sitemap-muted, color-mix(in srgb, currentColor 55%, transparent)) 75%,
-			transparent
-		);
+		color: var(--gb-sitemap-muted, color-mix(in srgb, currentColor 70%, transparent));
 	}
 
 	.gb-sitemap__filter-label {
@@ -757,7 +753,7 @@ preprocessor, no `@goobits/ui` dependency.
 	/*
 	 * Unified pastel pill — same shape/size/font for every tag, only hue varies.
 	 * Formula: bg = pill-hue at 12%, border = pill-hue at 32%, text = pill-hue
-	 * at 72% mixed toward foreground text. Each hue is overridable via a
+	 * at 35% mixed toward foreground text for readable contrast. Each hue is overridable via a
 	 * matching `--gb-sitemap-tag-<lower>-hue` custom property.
 	 */
 	.gb-sitemap__tag {
@@ -772,7 +768,7 @@ preprocessor, no `@goobits/ui` dependency.
 		text-transform: uppercase;
 		line-height: 1;
 		white-space: nowrap;
-		color: color-mix(in srgb, var(--pill-hue) 72%, var(--gb-sitemap-text, currentColor));
+		color: color-mix(in srgb, var(--pill-hue) 35%, var(--gb-sitemap-text, currentColor));
 		background: color-mix(in srgb, var(--pill-hue) 12%, transparent);
 		border: 1px solid color-mix(in srgb, var(--pill-hue) 32%, transparent);
 		border-radius: 999px;
