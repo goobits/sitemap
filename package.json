@@ -41,7 +41,7 @@
 	"dependencies": {
 		"@lucide/svelte": "^1.26.0"
 	},
-	"packageManager": "pnpm@11.21.0",
+	"packageManager": "pnpm@11.22.0",
 	"peerDependencies": {
 		"@sveltejs/kit": "^2.0.0",
 		"svelte": "^5.0.0",
