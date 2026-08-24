@@ -75,6 +75,16 @@ describe('createSitemapXmlHandler', () => {
 		expect(body).toContain('/async/')
 	})
 
+	it('omits lastmod for routes without a timestamp', async () => {
+		const handler = createSitemapXmlHandler({
+			fallbackOrigin: 'https://example.com',
+			getRoutes: () => [{ path: '/without-timestamp' }]
+		})
+		const body = await (await handler(mkEvent())).text()
+		expect(body).toContain('<loc>https://example.com/without-timestamp/</loc>')
+		expect(body).not.toContain('<lastmod>')
+	})
+
 	it('prefers PUBLIC_BASE_URL from platform env over the fallback', async () => {
 		const handler = createSitemapXmlHandler({
 			fallbackOrigin: 'https://fallback.example.com',
