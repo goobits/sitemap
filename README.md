@@ -65,8 +65,9 @@ pnpm install
 `workspace:*` always tracks the submodule's current HEAD. For production, pin the submodule to a tagged commit:
 
 ```bash
-cd packages/sitemap && git checkout v0.2.0 && cd ../..
-git add packages/sitemap && git commit -m "chore: pin @goobits/sitemap to v0.2.0"
+SITEMAP_VERSION=$(node -p "require('./packages/sitemap/package.json').version")
+git -C packages/sitemap checkout "v${SITEMAP_VERSION}"
+git add packages/sitemap && git commit -m "chore: pin @goobits/sitemap to v${SITEMAP_VERSION}"
 ```
 
 ### Syncing from upstream
