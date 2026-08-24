@@ -157,17 +157,41 @@ export function buildSitemapXml(origin: string, routes: SitemapRoute[]) {
 	const urlEntries = routes
 		.map((route) => {
 			const loc = escapeXml(toAbsoluteUrl(origin, route.path))
-			const lastMod = escapeXml(formatSitemapLastMod(route.lastModified))
+			const lastModPart = route.lastModified
+				? `<lastmod>${escapeXml(formatSitemapLastMod(route.lastModified))}</lastmod>`
+				: ''
 			const changefreqPart = route.changefreq
 				? `<changefreq>${escapeXml(route.changefreq)}</changefreq>`
 				: ''
 			const priorityValue = clampPriority(route.priority)
 			const priorityPart = priorityValue ? `<priority>${priorityValue}</priority>` : ''
-			return `<url><loc>${loc}</loc><lastmod>${lastMod}</lastmod>${changefreqPart}${priorityPart}</url>`
+			return `<url><loc>${loc}</loc>${lastModPart}${changefreqPart}${priorityPart}</url>`
 		})
 		.join('')
 
 	return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urlEntries}</urlset>`
+}
+
+export interface RobotsTxtOptions {
+	sitemapUrl: string
+	userAgent?: string
+	allow?: string[]
+	disallow?: string[]
+	extraLines?: string[]
+}
+
+/** Render a robots.txt document with an explicit sitemap URL. */
+export function buildRobotsTxt(options: RobotsTxtOptions): string {
+	const lines = [
+		`User-agent: ${options.userAgent ?? '*'}`,
+		...(options.allow ?? []).map((path) => `Allow: ${path}`),
+		...(options.disallow ?? []).map((path) => `Disallow: ${path}`),
+		...(options.extraLines ?? []),
+		'',
+		`Sitemap: ${options.sitemapUrl}`,
+		''
+	]
+	return lines.join('\n')
 }
 
 /**

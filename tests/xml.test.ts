@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import {
+	buildRobotsTxt,
 	buildSitemapIndexXml,
 	buildSitemapXml,
 	escapeXml,
@@ -116,6 +117,11 @@ describe('buildSitemapXml', () => {
 		expect(xml).not.toContain('priority')
 	})
 
+	it('omits lastmod when not supplied', () => {
+		const xml = buildSitemapXml('https://example.com', [{ path: '/about' }])
+		expect(xml).not.toContain('lastmod')
+	})
+
 	it('clamps priority to [0,1] and rounds to one decimal', () => {
 		const xml = buildSitemapXml('https://example.com', [
 			{ path: '/a', lastModified: '2026-01-01T00:00:00Z', priority: 5 },
@@ -141,6 +147,22 @@ describe('buildSitemapXml', () => {
 		])
 		// Just confirm the value got through.
 		expect(xml).toContain('<changefreq>weekly</changefreq>')
+	})
+})
+
+describe('buildRobotsTxt', () => {
+	it('renders allow, disallow, extra lines, and the sitemap URL', () => {
+		const text = buildRobotsTxt({
+			sitemapUrl: 'https://example.com/sitemap.xml',
+			allow: ['/docs/'],
+			disallow: ['/internal/'],
+			extraLines: ['Crawl-delay: 5']
+		})
+		expect(text).toContain('User-agent: *')
+		expect(text).toContain('Allow: /docs/')
+		expect(text).toContain('Disallow: /internal/')
+		expect(text).toContain('Crawl-delay: 5')
+		expect(text).toContain('Sitemap: https://example.com/sitemap.xml')
 	})
 })
 

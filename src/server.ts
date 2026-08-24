@@ -7,6 +7,8 @@
 
 export {
 	type SitemapIndexEntry,
+	type RobotsTxtOptions,
+	buildRobotsTxt,
 	buildSitemapIndexXml,
 	buildSitemapXml,
 	escapeXml,

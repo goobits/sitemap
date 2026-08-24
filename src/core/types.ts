@@ -88,13 +88,7 @@ export type RouteInventory = {
 
 /** Sitemap `<changefreq>` values per the sitemaps.org spec. */
 export type SitemapChangeFreq =
-	| 'always'
-	| 'hourly'
-	| 'daily'
-	| 'weekly'
-	| 'monthly'
-	| 'yearly'
-	| 'never'
+	'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never'
 
 /**
  * Minimal record needed to render a single `<url>` element.
@@ -106,7 +100,7 @@ export type SitemapChangeFreq =
  */
 export type SitemapRoute = {
 	path: string
-	lastModified: string
+	lastModified?: string
 	changefreq?: SitemapChangeFreq
 	/** A value in `[0.0, 1.0]`. Default per spec is `0.5`. */
 	priority?: number
