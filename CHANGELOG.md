@@ -17,6 +17,8 @@ All notable changes to `@goobits/sitemap` are documented here. The format adhere
 
 ### Changed
 
+- Standalone tests now cap worker fan-out so the package remains responsive
+  when verified alongside other workspace consumers.
 - The standalone package check now includes its BEM convention gate.
 - Human sitemap counts now describe only the routes visible to the current
   viewer, including custom hero snippet statistics, and hidden routes remain

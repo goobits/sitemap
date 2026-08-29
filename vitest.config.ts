@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
 	plugins: [svelte()],
 	test: {
+		maxWorkers: 2,
 		include: ['tests/**/*.test.ts'],
 		environment: 'jsdom',
 		coverage: {
