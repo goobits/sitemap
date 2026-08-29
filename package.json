@@ -73,6 +73,7 @@
 		"vitest": "^4.1.10"
 	},
 	"scripts": {
+		"check": "pnpm run typecheck && pnpm run check:css && pnpm run test",
 		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && svelte-check --workspace src/ui --fail-on-warnings",
 		"check:css": "node scripts/checkCssConventions.mjs",
 		"test": "vitest run",

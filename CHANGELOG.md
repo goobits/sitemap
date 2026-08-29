@@ -17,6 +17,7 @@ All notable changes to `@goobits/sitemap` are documented here. The format adhere
 
 ### Changed
 
+- The standalone package check now includes its BEM convention gate.
 - Human sitemap counts now describe only the routes visible to the current
   viewer, and hidden routes remain excluded from internal mode.
 - Improved the default sitemap count and tag-label contrast while preserving
