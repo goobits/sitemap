@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import SitemapPage from '../src/ui/SitemapPage.svelte'
 import type { RouteInventory, SitemapEntry } from '../src/core.js'
+import SitemapHeroHarness from './fixtures/SitemapHeroHarness.svelte'
 
 function page(
 	path: string,
@@ -50,6 +51,19 @@ describe('SitemapPage', () => {
 		expect(screen.getByRole('link', { name: /Alpha Public/ })).toBeTruthy()
 		expect(screen.queryByText('Internal Console')).toBeNull()
 		expect(screen.queryByText('Hidden Operations')).toBeNull()
+	})
+
+	it('passes only viewer-safe route statistics to custom heroes', () => {
+		render(SitemapHeroHarness, { data: inventory })
+
+		expect(JSON.parse(screen.getByTestId('hero-stats').textContent ?? '')).toEqual({
+			total: 2,
+			pages: 2,
+			api: 0,
+			dynamic: 0,
+			ssr: 1,
+			protected: 0
+		})
 	})
 
 	it('adds internal routes for permitted viewers but never exposes hidden routes', async () => {

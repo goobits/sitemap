@@ -25,6 +25,7 @@ preprocessor, no `@goobits/ui` dependency.
 	import { type Snippet, untrack } from 'svelte'
 	import { Search } from '@lucide/svelte'
 	import {
+		computeRouteStats,
 		getFilteredSitemapCount,
 		getFilteredSitemapGroups,
 		getRouteTags,
@@ -144,7 +145,8 @@ preprocessor, no `@goobits/ui` dependency.
 		getFilteredSitemapGroups(visibleGrouped, query, selectedTags, sortBy)
 	)
 	const filteredCount = $derived(getFilteredSitemapCount(filteredGrouped))
-	const totalCount = $derived(getFilteredSitemapCount(visibleGrouped))
+	const visibleStats = $derived(computeRouteStats(Object.values(visibleGrouped).flat()))
+	const totalCount = $derived(visibleStats.total)
 	const availableTags = $derived(getSitemapAvailableTags(canViewInternalRoutes))
 	const orderedCategoryEntries = $derived.by(() => {
 		const known = categoryOrder.filter((cat) => cat in filteredGrouped)
@@ -185,7 +187,7 @@ preprocessor, no `@goobits/ui` dependency.
 <main class={['gb-sitemap', className].filter(Boolean).join(' ')}>
 	<header class="gb-sitemap__hero">
 		{#if hero}
-			{@render hero({ stats: data.stats })}
+			{@render hero({ stats: visibleStats })}
 		{:else}
 			{#if eyebrow}
 				<p class="gb-sitemap__eyebrow">{eyebrow}</p>
