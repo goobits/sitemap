@@ -6,6 +6,8 @@ All notable changes to `@goobits/sitemap` are documented here. The format adhere
 
 ### Added
 
+- Added mounted component coverage for public/internal visibility, filtering,
+  sorting, collapsing, and accessible control state.
 - Added an explicit handler `baseUrl` option so hosts can pin canonical crawler
   URLs ahead of platform environment and request origins.
 - Added runtime-agnostic route-channel policy validation and inventory
@@ -15,6 +17,8 @@ All notable changes to `@goobits/sitemap` are documented here. The format adhere
 
 ### Changed
 
+- Human sitemap counts now describe only the routes visible to the current
+  viewer, and hidden routes remain excluded from internal mode.
 - Improved the default sitemap count and tag-label contrast while preserving
   the existing CSS custom-property theming contract.
 - Documented the Node filesystem boundary of route-tree generation separately

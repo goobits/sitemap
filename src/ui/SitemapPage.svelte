@@ -29,6 +29,7 @@ preprocessor, no `@goobits/ui` dependency.
 		getFilteredSitemapGroups,
 		getRouteTags,
 		getSitemapAvailableTags,
+		getSitemapAudiencesForVisibility,
 		type HumanSitemapVisibility,
 		type RouteInventoryStats,
 		type SitemapEntry,
@@ -129,10 +130,11 @@ preprocessor, no `@goobits/ui` dependency.
 	let collapsed = $state<Record<string, boolean>>({})
 
 	const visibleGrouped = $derived.by(() => {
-		if (canViewInternalRoutes && visibility === 'internal') return data.grouped
+		const effectiveVisibility = canViewInternalRoutes ? visibility : 'public'
+		const audiences = getSitemapAudiencesForVisibility(effectiveVisibility)
 		const out: Record<string, SitemapEntry[]> = {}
 		for (const [category, entries] of Object.entries(data.grouped)) {
-			const filtered = entries.filter((e) => e.sitemap === 'public')
+			const filtered = entries.filter((entry) => audiences.includes(entry.sitemap))
 			if (filtered.length > 0) out[category] = filtered
 		}
 		return out
@@ -142,7 +144,7 @@ preprocessor, no `@goobits/ui` dependency.
 		getFilteredSitemapGroups(visibleGrouped, query, selectedTags, sortBy)
 	)
 	const filteredCount = $derived(getFilteredSitemapCount(filteredGrouped))
-	const totalCount = $derived(data.stats.total)
+	const totalCount = $derived(getFilteredSitemapCount(visibleGrouped))
 	const availableTags = $derived(getSitemapAvailableTags(canViewInternalRoutes))
 	const orderedCategoryEntries = $derived.by(() => {
 		const known = categoryOrder.filter((cat) => cat in filteredGrouped)
@@ -152,7 +154,8 @@ preprocessor, no `@goobits/ui` dependency.
 		return [...known, ...unknown].map((cat) => [cat, filteredGrouped[cat]!] as const)
 	})
 	const resolvedSubtitle = $derived(
-		subtitle ?? `${totalCount} public ${totalCount === 1 ? 'page' : 'pages'}.`
+		subtitle ??
+			`${totalCount} ${canViewInternalRoutes && visibility === 'internal' ? 'visible' : 'public'} ${totalCount === 1 ? 'route' : 'routes'}.`
 	)
 
 	function toggle(category: string) {
@@ -195,7 +198,7 @@ preprocessor, no `@goobits/ui` dependency.
 			<p class="gb-sitemap__subtitle">{resolvedSubtitle}</p>
 			<p class="gb-sitemap__signal">
 				<span class="gb-sitemap__signal-dot" aria-hidden="true"></span>
-				<span>{data.stats.total} routes indexed</span>
+				<span>{totalCount} routes indexed</span>
 			</p>
 		{/if}
 	</header>

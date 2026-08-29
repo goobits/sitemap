@@ -62,8 +62,11 @@
 	"devDependencies": {
 		"@lucide/svelte": "^1.26.0",
 		"@sveltejs/kit": "^2.70.1",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@testing-library/svelte": "^5.4.2",
 		"@types/node": "^26.2.0",
 		"@vitest/coverage-v8": "^4.1.10",
+		"jsdom": "^30.0.1",
 		"svelte": "^5.56.8",
 		"svelte-check": "^4.7.3",
 		"typescript": "^6.0.3",
@@ -71,6 +74,7 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && svelte-check --workspace src/ui --fail-on-warnings",
+		"check:css": "node scripts/checkCssConventions.mjs",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
