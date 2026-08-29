@@ -402,6 +402,7 @@ import { getPublicRouteInventory, FALLBACK_ORIGIN } from '$lib/server/sitemap-ro
 export const prerender = false
 
 export const GET = createSitemapXmlHandler({
+	baseUrl: process.env.PUBLIC_APP_URL,
 	fallbackOrigin: FALLBACK_ORIGIN,
 	getRoutes: () => getPublicRouteInventory().routes
 })
@@ -413,13 +414,14 @@ import { createRobotsTxtHandler } from '@goobits/sitemap/sveltekit'
 import { FALLBACK_ORIGIN } from '$lib/server/sitemap-routes'
 
 export const GET = createRobotsTxtHandler({
+	baseUrl: process.env.PUBLIC_APP_URL,
 	fallbackOrigin: FALLBACK_ORIGIN
 	// Optional:
 	// extraLines: ['Disallow: /admin/']
 })
 ```
 
-Both factories handle origin resolution (`PUBLIC_BASE_URL` → request → fallback), set sensible `application/xml` / `text/plain` + `cache-control: public, max-age=3600` headers, and never throw.
+Both factories handle origin resolution (explicit `baseUrl` → `PUBLIC_BASE_URL` → request → fallback), set sensible `application/xml` / `text/plain` + `cache-control: public, max-age=3600` headers, and never throw.
 
 ## Auto-scan filesystem routes (SvelteKit)
 

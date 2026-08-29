@@ -18,6 +18,8 @@ import {
 
 /** Options for `createSitemapXmlHandler`. */
 export interface SitemapXmlHandlerOptions {
+	/** Canonical public origin supplied by the host. Takes precedence over platform env and request hosts. */
+	baseUrl?: string
 	/** Last-resort origin when neither `PUBLIC_BASE_URL`/`BASE_URL` nor the request origin yield a usable value. */
 	fallbackOrigin: string
 	/**
@@ -53,7 +55,7 @@ export interface SitemapXmlHandlerOptions {
 export function createSitemapXmlHandler(options: SitemapXmlHandlerOptions): RequestHandler {
 	const cacheControl = options.cacheControl ?? 'public, max-age=3600'
 	return async ({ url, platform }) => {
-		const baseUrl = getBaseUrl(getPlatformEnv(platform))
+		const baseUrl = options.baseUrl ?? getBaseUrl(getPlatformEnv(platform))
 		const origin = resolveSiteOrigin({
 			...(baseUrl !== undefined ? { baseUrl } : {}),
 			requestUrl: url,
@@ -80,6 +82,8 @@ export function createSitemapXmlHandler(options: SitemapXmlHandlerOptions): Requ
 
 /** Options for `createRobotsTxtHandler`. */
 export interface RobotsTxtHandlerOptions {
+	/** Canonical public origin supplied by the host. Takes precedence over platform env and request hosts. */
+	baseUrl?: string
 	/** Last-resort origin when env-supplied values are missing. */
 	fallbackOrigin: string
 	/** Path to the sitemap file (relative to origin). Default: `'/sitemap.xml'`. */
@@ -107,7 +111,7 @@ export function createRobotsTxtHandler(options: RobotsTxtHandlerOptions): Reques
 	const extraLines = options.extraLines ?? []
 	const cacheControl = options.cacheControl ?? 'public, max-age=3600'
 	return async ({ url, platform }) => {
-		const baseUrl = getBaseUrl(getPlatformEnv(platform))
+		const baseUrl = options.baseUrl ?? getBaseUrl(getPlatformEnv(platform))
 		const origin = resolveSiteOrigin({
 			...(baseUrl !== undefined ? { baseUrl } : {}),
 			requestUrl: url,

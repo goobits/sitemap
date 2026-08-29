@@ -6,6 +6,8 @@ All notable changes to `@goobits/sitemap` are documented here. The format adhere
 
 ### Added
 
+- Added an explicit handler `baseUrl` option so hosts can pin canonical crawler
+  URLs ahead of platform environment and request origins.
 - Added runtime-agnostic route-channel policy validation and inventory
   filtering under `/core`.
 - Added build-time SvelteKit route-channel checking and route-tree generation

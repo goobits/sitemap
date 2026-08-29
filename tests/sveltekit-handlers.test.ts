@@ -100,6 +100,20 @@ describe('createSitemapXmlHandler', () => {
 		expect(body).toContain('https://prod.example.com/x/')
 		expect(body).not.toContain('fallback.example.com')
 	})
+
+	it('prefers an explicit host baseUrl over an external request origin', async () => {
+		const handler = createSitemapXmlHandler({
+			baseUrl: 'https://canonical.example.com',
+			fallbackOrigin: 'https://fallback.example.com',
+			getRoutes: () => [{ path: '/x' }]
+		})
+		const body = await (
+			await handler(mkEvent('https://attacker.example/sitemap.xml'))
+		).text()
+
+		expect(body).toContain('https://canonical.example.com/x/')
+		expect(body).not.toContain('attacker.example')
+	})
 })
 
 describe('createRobotsTxtHandler', () => {
@@ -145,5 +159,18 @@ describe('createRobotsTxtHandler', () => {
 		const handler = createRobotsTxtHandler({ fallbackOrigin: 'https://example.com' })
 		const response = await handler(mkEvent('http://localhost:3000/robots.txt'))
 		expect(response.headers.get('cache-control')).toBe('public, max-age=3600')
+	})
+
+	it('uses an explicit host baseUrl in the sitemap declaration', async () => {
+		const handler = createRobotsTxtHandler({
+			baseUrl: 'https://canonical.example.com',
+			fallbackOrigin: 'https://fallback.example.com'
+		})
+		const body = await (
+			await handler(mkEvent('https://attacker.example/robots.txt'))
+		).text()
+
+		expect(body).toContain('Sitemap: https://canonical.example.com/sitemap.xml')
+		expect(body).not.toContain('attacker.example')
 	})
 })
