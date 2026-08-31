@@ -11,6 +11,12 @@ allowBuilds:
   esbuild: true
 
 overrides:
+  '@csstools/css-color-parser': 4.2.0
+  '@csstools/css-syntax-patches-for-csstree': 1.1.8
+  '@sveltejs/kit': 2.70.3
   cookie: 0.7.2
-  postcss: 8.5.23
-  vite: 8.1.5
+  nanoid: 3.3.18
+  postcss: 8.5.26
+  tldts: 7.4.10
+  tldts-core: 7.4.10
+  vite: 8.2.2
